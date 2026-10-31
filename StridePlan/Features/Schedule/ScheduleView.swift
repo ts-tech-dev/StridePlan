@@ -182,8 +182,9 @@ struct WorkoutActionsMenu: View {
                 Label("Move to…", systemImage: "calendar")
             }
 
-            let others = plan.workouts.filter {
-                $0 !== workout && $0.status != .completed && days.contains(where: { day in Calendar.current.isDate(day, inSameDayAs: $0.date) })
+            let others = plan.workouts.filter { other in
+                other !== workout && other.status != .completed
+                    && days.contains(where: { day in Calendar.current.isDate(day, inSameDayAs: other.date) })
             }
             if !others.isEmpty {
                 Menu {
