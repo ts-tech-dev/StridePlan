@@ -7,7 +7,9 @@ protocol VoiceCoaching: AnyObject {
 }
 
 /// Speaks cues over music by ducking other audio, then restores it when the queue empties.
-final class VoiceCoachService: NSObject, VoiceCoaching, AVSpeechSynthesizerDelegate {
+/// `speak`/`stop` are called from the main actor and delegate callbacks are forwarded to the main queue,
+/// so mutable state is only touched on the main thread.
+final class VoiceCoachService: NSObject, VoiceCoaching, AVSpeechSynthesizerDelegate, @unchecked Sendable {
     private let synthesizer = AVSpeechSynthesizer()
     private let session = AVAudioSession.sharedInstance()
     private var pending = 0
@@ -46,11 +48,11 @@ final class VoiceCoachService: NSObject, VoiceCoaching, AVSpeechSynthesizerDeleg
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        finishOne()
+        DispatchQueue.main.async { self.finishOne() }
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        finishOne()
+        DispatchQueue.main.async { self.finishOne() }
     }
 
     private func finishOne() {

@@ -39,21 +39,8 @@ struct RunSummaryView: View {
                         .bold()
                 }
             } else {
-                Menu {
-                    if profile.healthKitEnabled && run.healthKitUUID == nil {
-                        Button {
-                            RunRecorder.syncHealth(run: run, profile: profile, health: services.health, context: context)
-                        } label: {
-                            Label("Save to Apple Health", systemImage: "heart")
-                        }
-                    }
-                    Button(role: .destructive) {
-                        confirmingDelete = true
-                    } label: {
-                        Label("Delete run", systemImage: "trash")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle").accessibilityLabel("Run options")
+                ToolbarItem(placement: .primaryAction) {
+                    optionsMenu
                 }
             }
         }
@@ -63,6 +50,25 @@ struct RunSummaryView: View {
             Text("It will be removed from your history. Runs saved to Apple Health stay there.")
         }
         .onDisappear(perform: save)
+    }
+
+    private var optionsMenu: some View {
+        Menu {
+            if profile.healthKitEnabled && run.healthKitUUID == nil {
+                Button {
+                    RunRecorder.syncHealth(run: run, profile: profile, health: services.health, context: context)
+                } label: {
+                    Label("Save to Apple Health", systemImage: "heart")
+                }
+            }
+            Button(role: .destructive) {
+                confirmingDelete = true
+            } label: {
+                Label("Delete run", systemImage: "trash")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle").accessibilityLabel("Run options")
+        }
     }
 
     private var header: some View {
