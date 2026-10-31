@@ -40,7 +40,12 @@ struct MainTabView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Query(filter: #Predicate<ActivePlan> { $0.statusRaw == "active" }) private var activePlans: [ActivePlan]
-    @State private var selection: AppTab = .today
+    @State private var selection: AppTab
+
+    init(profile: UserProfile, initialTab: AppTab = .today) {
+        self.profile = profile
+        _selection = State(initialValue: initialTab)
+    }
 
     var body: some View {
         @Bindable var launcher = launcher

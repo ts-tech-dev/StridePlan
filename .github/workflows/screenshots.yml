@@ -1,0 +1,74 @@
+name: Screenshots
+
+on:
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_*.app | grep -v -i beta | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Pick and boot an iPhone Pro simulator
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in devices if "iOS" in k), key=lambda k: [int(x) for x in k.split("iOS-")[-1].split("-")])
+          for runtime in reversed(ios):
+              phones = [d for d in devices[runtime] if d["name"].startswith("iPhone")]
+              pro = [d for d in phones if d["name"].endswith("Pro")]
+              if phones:
+                  print((pro or phones)[0]["udid"]); sys.exit()
+          ')
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices | grep "$UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Build app
+        run: |
+          set -o pipefail
+          xcodebuild build -project StridePlan.xcodeproj -scheme StridePlan -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tail -20
+
+      - name: Capture screenshots
+        env:
+          UDID: ${{ steps.sim.outputs.udid }}
+        run: |
+          APP=build/Build/Products/Debug-iphonesimulator/StridePlan.app
+          BUNDLE=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist")
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 \
+            --cellularMode active --cellularBars 4 --wifiBars 3 --dataNetwork wifi
+          mkdir -p shots
+          shoot() {  # name appearance wait
+            xcrun simctl ui "$UDID" appearance "$2"
+            xcrun simctl launch --terminate-running-process "$UDID" "$BUNDLE" -screen "$1"
+            sleep "$3"
+            xcrun simctl io "$UDID" screenshot "shots/$1-$2.png"
+          }
+          # Warm-up launch (first launch is slow while SwiftData and fonts initialise)
+          shoot today light 15
+          for s in onboarding today plan catalog planDetail setup workoutDetail summary history settings; do
+            shoot "$s" light 8
+          done
+          shoot running light 35
+          shoot today dark 8
+          shoot running dark 20
+          shoot summary dark 8
+          ls -la shots
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: shots/

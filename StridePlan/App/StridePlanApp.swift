@@ -18,12 +18,24 @@ struct StridePlanApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(\.services, services)
-                .environment(launcher)
-                .tint(Theme.accent)
+            #if DEBUG
+            if let screen = ScreenshotMode.requestedScreen {
+                ScreenshotHost(screen: screen)
+            } else {
+                rootView
+            }
+            #else
+            rootView
+            #endif
         }
         .modelContainer(container)
+    }
+
+    private var rootView: some View {
+        RootView()
+            .environment(\.services, services)
+            .environment(launcher)
+            .tint(Theme.accent)
     }
 }
 
