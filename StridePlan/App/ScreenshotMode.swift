@@ -81,7 +81,9 @@ private struct ScreenshotRunView: View {
     @State private var session: RunSession?
 
     var body: some View {
-        Group {
+        ZStack {
+            // A non-empty root so onAppear fires before the session exists.
+            Color(.systemBackground).ignoresSafeArea()
             if let session {
                 RunningView(session: session) { _ in }
             }

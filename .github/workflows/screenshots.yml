@@ -2,6 +2,11 @@ name: Screenshots
 
 on:
   workflow_dispatch:
+    inputs:
+      screens:
+        description: "Space-separated screens (blank = all), e.g. 'running summary'"
+        required: false
+        default: ""
 
 jobs:
   screenshots:
@@ -44,6 +49,7 @@ jobs:
       - name: Capture screenshots
         env:
           UDID: ${{ steps.sim.outputs.udid }}
+          SCREENS: ${{ inputs.screens }}
         run: |
           APP=build/Build/Products/Debug-iphonesimulator/StridePlan.app
           BUNDLE=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist")
@@ -59,13 +65,21 @@ jobs:
           }
           # Warm-up launch (first launch is slow while SwiftData and fonts initialise)
           shoot today light 15
-          for s in onboarding today plan catalog planDetail setup workoutDetail summary history settings; do
-            shoot "$s" light 8
-          done
-          shoot running light 35
-          shoot today dark 8
-          shoot running dark 20
-          shoot summary dark 8
+          if [ -n "$SCREENS" ]; then
+            for s in $SCREENS; do
+              wait=8; [ "$s" = running ] && wait=35
+              shoot "$s" light $wait
+              shoot "$s" dark $wait
+            done
+          else
+            for s in onboarding today plan catalog planDetail setup workoutDetail summary history settings; do
+              shoot "$s" light 8
+            done
+            shoot running light 35
+            shoot today dark 8
+            shoot running dark 35
+            shoot summary dark 8
+          fi
           ls -la shots
 
       - uses: actions/upload-artifact@v4
