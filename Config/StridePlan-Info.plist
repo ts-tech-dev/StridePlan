@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Merged with the keys Xcode generates from INFOPLIST_KEY_* build settings. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>StridePlan uses your location during runs to measure distance, pace and splits, and to draw your route.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>StridePlan reads your heart rate to show averages in your run summaries.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>StridePlan saves your completed runs to Apple Health as running workouts with routes.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>audio</string>
+	</array>
+</dict>
+</plist>
