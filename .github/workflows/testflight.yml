@@ -4,6 +4,7 @@ name: TestFlight
 # profiles stored in the repo) and uploads it to App Store Connect / TestFlight.
 #
 # Repository secrets:   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (App Store Connect API key, Admin role)
+#                       DIST_CERT_P12 (base64 Apple Distribution .p12), DIST_CERT_PASSWORD
 # Repository variables: BUNDLE_ID_PREFIX (e.g. com.yourname.kadence), DEVELOPMENT_TEAM (10-char Team ID)
 
 on:
@@ -39,6 +40,7 @@ jobs:
             if [ -z "${!v}" ]; then echo "::error::$v is not set (see the header of testflight.yml)"; missing=1; fi
           done
           [ -n "${{ secrets.ASC_KEY_P8 }}" ] || { echo "::error::ASC_KEY_P8 secret is not set"; missing=1; }
+          [ -n "${{ secrets.DIST_CERT_P12 }}" ] || { echo "::error::DIST_CERT_P12 secret is not set"; missing=1; }
           exit $missing
 
       - name: Select newest Xcode
@@ -55,6 +57,25 @@ jobs:
           KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
           printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
           echo "KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      # Distribution certificate (Apple Distribution) + its private key, as a base64 .p12.
+      # Signing the archive with it means Xcode only needs App Store profiles, which need no devices.
+      - name: Import distribution certificate
+        env:
+          DIST_CERT_P12: ${{ secrets.DIST_CERT_P12 }}
+          DIST_CERT_PASSWORD: ${{ secrets.DIST_CERT_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KC_PASS=$(uuidgen)
+          printf '%s' "$DIST_CERT_P12" | base64 --decode > "$RUNNER_TEMP/dist.p12"
+          security create-keychain -p "$KC_PASS" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KC_PASS" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/dist.p12" -P "$DIST_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KC_PASS" "$KEYCHAIN" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/dist.p12"
+          security find-identity -v -p codesigning "$KEYCHAIN"
 
       - name: Archive
         run: |
@@ -73,6 +94,7 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             BUNDLE_ID_PREFIX="$BUNDLE_ID_PREFIX" \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             "${EXTRA[@]}" \
             2>&1 | tee archive.log | grep -E "error:|warning: .*[Ss]ign|\*\* ARCHIVE" || true
@@ -116,6 +138,8 @@ jobs:
             export.log
           if-no-files-found: ignore
 
-      - name: Remove API key
+      - name: Clean up signing material
         if: always()
-        run: rm -f "$KEY_PATH"
+        run: |
+          rm -f "$KEY_PATH"
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true

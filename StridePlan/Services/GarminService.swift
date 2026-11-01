@@ -99,7 +99,7 @@ final class GarminService: GarminConnecting {
 
     func pairWatch() {
         startSDK()
-        sdk.showConnectIQDeviceSelection()
+        sdk.showDeviceSelection()
     }
 
     func handleOpenURL(_ url: URL) -> Bool {
@@ -129,7 +129,7 @@ final class GarminService: GarminConnecting {
         sdk.unregister(forAllDeviceEvents: bridge)
         sdk.unregister(forAllAppMessages: bridge)
         device = newDevice
-        let watchApp = IQApp(uuid: Self.watchAppID, storeUuid: Self.watchAppID, device: newDevice)
+        let watchApp = IQApp(uuid: Self.watchAppID, store: Self.watchAppID, device: newDevice)
         app = watchApp
         sdk.register(forDeviceEvents: newDevice, delegate: bridge)
         sdk.register(forAppMessages: watchApp, delegate: bridge)
@@ -209,7 +209,7 @@ final class GarminService: GarminConnecting {
 
     func showWatchAppInStore() {
         guard let app else { return }
-        sdk.showConnectIQStore(for: app)
+        sdk.showStore(for: app)
     }
 }
 
