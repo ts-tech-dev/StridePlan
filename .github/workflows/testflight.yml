@@ -106,7 +106,7 @@ jobs:
             2>&1 | tee archive.log | grep -E "error:|warning: .*[Ss]ign|\*\* ARCHIVE" || true
           test -d "$RUNNER_TEMP/Kadence.xcarchive" || { echo "::error::Archive failed, see archive.log artifact"; exit 1; }
 
-      - name: Export and upload to App Store Connect
+      - name: Export IPA and upload to App Store Connect
         run: |
           set -o pipefail
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
@@ -115,7 +115,7 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key><string>app-store-connect</string>
-            <key>destination</key><string>upload</string>
+            <key>destination</key><string>export</string>
             <key>signingStyle</key><string>manual</string>
             <key>signingCertificate</key><string>Apple Distribution</string>
             <key>teamID</key><string>${DEVELOPMENT_TEAM}</string>
@@ -133,10 +133,13 @@ jobs:
             -archivePath "$RUNNER_TEMP/Kadence.xcarchive" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
             -exportPath "$RUNNER_TEMP/export" \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             2>&1 | tee export.log
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa)
+          # altool finds the key by ID in ~/.appstoreconnect/private_keys
+          mkdir -p ~/.appstoreconnect/private_keys
+          cp "$KEY_PATH" ~/.appstoreconnect/private_keys/
+          xcrun altool --upload-app --type ios --file "$IPA" \
+            --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID" 2>&1 | tee -a export.log
           echo "Uploaded build $BUILD_NUMBER. It appears in App Store Connect > TestFlight after processing (10-30 min)." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload logs
@@ -152,5 +155,5 @@ jobs:
       - name: Clean up signing material
         if: always()
         run: |
-          rm -f "$KEY_PATH"
+          rm -f "$KEY_PATH" ~/.appstoreconnect/private_keys/AuthKey_*.p8
           security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true
