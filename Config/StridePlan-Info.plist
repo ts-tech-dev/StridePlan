@@ -9,6 +9,8 @@
 	<string>Kadence reads your heart rate to show averages in your run summaries.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Kadence saves your completed runs to Apple Health as running workouts with routes.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Kadence uses your steps to estimate distance and pace on treadmill runs.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Kadence uses Bluetooth to send workouts to your Garmin watch and receive the runs you record on it.</string>
 	<key>CFBundleURLTypes</key>

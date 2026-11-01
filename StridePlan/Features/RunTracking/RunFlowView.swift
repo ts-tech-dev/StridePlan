@@ -12,6 +12,8 @@ struct RunFlowView: View {
     @State private var session: RunSession?
     @State private var savedRun: RunRecord?
     @State private var showingLocationDenied = false
+    /// Finished treadmill run waiting for the user to confirm the machine's distance.
+    @State private var treadmillToConfirm: RunSession?
 
     var body: some View {
         Group {
@@ -25,19 +27,28 @@ struct RunFlowView: View {
                 switch session.phase {
                 case .ready:
                     PreRunView(workout: request.template, session: session, zones: profile.paceZones, units: profile.units,
+                               isTreadmill: Binding(get: { session.isTreadmill }, set: { session.isTreadmill = $0 }),
                                onStart: { start(session) }, onCancel: { session.cancel(); dismiss() })
                 case .countdown(let value):
                     CountdownView(value: value, step: session.currentStep)
                 case .running, .paused:
                     RunningView(session: session, onEnd: { save in end(session, save: save) })
                 case .finished:
-                    ProgressView("Saving…")
+                    ProgressView(treadmillToConfirm == nil ? "Saving…" : "")
                 }
             } else {
                 ProgressView()
             }
         }
         .onAppear(perform: makeSession)
+        .sheet(item: $treadmillToConfirm) { session in
+            TreadmillDistanceSheet(estimate: session.distance, units: profile.units) { meters in
+                session.correctTreadmillDistance(to: meters)
+                treadmillToConfirm = nil
+                save(session)
+            }
+            .interactiveDismissDisabled()
+        }
         .alert("Location access needed", isPresented: $showingLocationDenied) {
             Button("Open Settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -58,11 +69,16 @@ struct RunFlowView: View {
         guard session == nil else { return }
         session = RunSession(
             workout: request.template, zones: profile.paceZones, units: profile.units, voiceSettings: profile.voiceSettings,
-            location: services.locationProvider(simulated: profile.simulateGPS), voice: services.voice,
+            location: services.locationProvider(simulated: profile.simulateGPS), pedometer: services.pedometer,
+            voice: services.voice,
             haptics: services.haptics, liveActivity: services.liveActivity)
     }
 
     private func start(_ session: RunSession) {
+        if session.isTreadmill {
+            session.begin()   // no GPS needed indoors
+            return
+        }
         Task {
             // Location permission is requested in context, right as the first run starts.
             let status = await session.requestLocation()
@@ -80,6 +96,14 @@ struct RunFlowView: View {
             dismiss()
             return
         }
+        if session.isTreadmill {
+            treadmillToConfirm = session
+        } else {
+            self.save(session)
+        }
+    }
+
+    private func save(_ session: RunSession) {
         let run = RunRecorder.makeRecord(from: session)
         context.insert(run)
         if let scheduled = request.scheduled {
@@ -91,13 +115,15 @@ struct RunFlowView: View {
     }
 }
 
+extension RunSession: Identifiable {}
+
 /// Builds and enriches persisted runs.
 @MainActor
 enum RunRecorder {
     static func makeRecord(from session: RunSession) -> RunRecord {
         let start = session.startDate ?? .now
         let run = RunRecord(startDate: start, endDate: session.endDate ?? .now, distanceMeters: session.distance,
-                            durationSeconds: session.movingTime, workoutTitle: session.workout?.title ?? "Free Run",
+                            durationSeconds: session.movingTime, workoutTitle: session.title,
                             workoutType: session.workout?.type ?? .easy)
         run.splits = session.splits
         run.route = session.route
@@ -134,6 +160,7 @@ private struct PreRunView: View {
     let session: RunSession
     let zones: PaceZones
     let units: UnitSystem
+    @Binding var isTreadmill: Bool
     let onStart: () -> Void
     let onCancel: () -> Void
 
@@ -151,9 +178,22 @@ private struct PreRunView: View {
                     StepStripView(steps: workout.flatSteps, zones: zones, height: 12)
                         .padding(.horizontal)
                 } else {
-                    WorkoutTypeIcon(type: .easy, size: 80)
-                    Text("Free Run").font(.largeTitle.bold())
-                    Text("No structure — just you and the road. We'll track distance, pace and splits.")
+                    Image(systemName: isTreadmill ? "figure.run.treadmill" : "figure.run")
+                        .font(.system(size: 40, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 80, height: 80)
+                        .background(Theme.accent, in: Circle())
+                        .accessibilityHidden(true)
+                    Text(isTreadmill ? "Treadmill Run" : "Free Run").font(.largeTitle.bold())
+                    Picker("Where", selection: $isTreadmill.animation(.snappy)) {
+                        Label("Outdoor", systemImage: "sun.max").tag(false)
+                        Label("Treadmill", systemImage: "figure.run.treadmill").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 24)
+                    Text(isTreadmill
+                         ? "Distance and pace are estimated from your steps. When you finish, you can enter the distance shown on the treadmill."
+                         : "No structure — just you and the road. We'll track distance, pace and splits.")
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 }
@@ -173,6 +213,60 @@ private struct PreRunView: View {
                 }
             }
         }
+    }
+}
+
+/// Lets the runner replace the step-based estimate with the treadmill's own distance reading.
+private struct TreadmillDistanceSheet: View {
+    let estimate: Double
+    let units: UnitSystem
+    let onSave: (Double) -> Void
+    @State private var text: String
+
+    init(estimate: Double, units: UnitSystem, onSave: @escaping (Double) -> Void) {
+        self.estimate = estimate
+        self.units = units
+        self.onSave = onSave
+        let value = estimate / units.metersPerUnit
+        _text = State(initialValue: value > 0 ? String(format: "%.2f", value) : "")
+    }
+
+    private var enteredMeters: Double? {
+        let normalized = text.replacingOccurrences(of: ",", with: ".")
+        guard let value = Double(normalized), value > 0, value < 200 else { return nil }
+        return value * units.metersPerUnit
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    HStack {
+                        TextField("Distance", text: $text)
+                            .keyboardType(.decimalPad)
+                            .font(.title2.monospacedDigit())
+                        Text(units.distanceAbbreviation).foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Text("Treadmill distance")
+                } footer: {
+                    Text(estimate > 0
+                         ? "Your steps suggest \(Formatters.distance(estimate, units: units, fractionDigits: 2)). Enter the treadmill's reading if it's different — splits and pace are adjusted to match."
+                         : "Enter the distance shown on the treadmill.")
+                }
+            }
+            .navigationTitle("How far did you run?")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if let enteredMeters { onSave(enteredMeters) }
+                    }
+                    .disabled(enteredMeters == nil)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 

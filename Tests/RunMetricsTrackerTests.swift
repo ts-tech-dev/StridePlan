@@ -79,4 +79,21 @@ final class RunMetricsTrackerTests: XCTestCase {
         XCTAssertEqual(tracker.splits.count, 2)
         XCTAssertEqual(tracker.splits[1].distanceMeters, 2000 - 1609.344, accuracy: 15)
     }
+
+    func testSplitsRebuiltFromCorrectedTreadmillCurve() {
+        // Even 5:00/km pace over 2.5 km, sampled every 30 s.
+        let curve = stride(from: 0.0, through: 750, by: 30).map { (time: $0, distance: $0 / 300 * 1000) }
+        let splits = RunMetricsTracker.splits(fromCurve: curve, splitLength: 1000)
+        XCTAssertEqual(splits.count, 3)
+        XCTAssertEqual(splits[0].durationSeconds, 300, accuracy: 0.5)
+        XCTAssertEqual(splits[1].durationSeconds, 300, accuracy: 0.5)
+        XCTAssertEqual(splits[2].distanceMeters, 500, accuracy: 0.5)
+        XCTAssertEqual(splits[2].durationSeconds, 150, accuracy: 0.5)
+    }
+
+    func testSplitsFromTwoPointCurveAssumeEvenPace() {
+        let splits = RunMetricsTracker.splits(fromCurve: [(0, 0), (1200, 3000)], splitLength: 1000)
+        XCTAssertEqual(splits.count, 3)
+        for split in splits { XCTAssertEqual(split.durationSeconds, 400, accuracy: 0.01) }
+    }
 }

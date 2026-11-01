@@ -9,6 +9,7 @@ final class AppServices {
     let liveActivity: RunActivityControlling
     let haptics: HapticsProviding
     let garmin: GarminConnecting
+    private let stepPedometer: PedometerProviding
     private let gpsLocation: LocationProviding
     private let makeSimulatedLocation: () -> LocationProviding
 
@@ -21,7 +22,8 @@ final class AppServices {
         notifications: NotificationScheduling,
         liveActivity: RunActivityControlling,
         haptics: HapticsProviding,
-        garmin: GarminConnecting
+        garmin: GarminConnecting,
+        pedometer: PedometerProviding = MockPedometer()
     ) {
         self.plans = plans
         self.gpsLocation = location
@@ -32,6 +34,16 @@ final class AppServices {
         self.liveActivity = liveActivity
         self.haptics = haptics
         self.garmin = garmin
+        self.stepPedometer = pedometer
+    }
+
+    /// Step-based distance for treadmill runs (a steady mock in the Simulator, which has no motion data).
+    var pedometer: PedometerProviding {
+        #if targetEnvironment(simulator)
+        return MockPedometer()
+        #else
+        return stepPedometer
+        #endif
     }
 
     /// Real GPS, or a GPX replay when the user enables "Simulate GPS" (always on in the Simulator).
@@ -54,7 +66,8 @@ final class AppServices {
             notifications: NotificationService(),
             liveActivity: LiveActivityService(),
             haptics: Haptics(),
-            garmin: GarminService()
+            garmin: GarminService(),
+            pedometer: PedometerService()
         )
     }
 

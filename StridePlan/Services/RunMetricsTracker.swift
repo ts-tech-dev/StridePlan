@@ -104,6 +104,19 @@ struct RunMetricsTracker {
         advance(by: meters, movingTime: movingTime)
     }
 
+    /// Rebuilds splits from a (moving time, cumulative distance) curve by interpolating each boundary
+    /// crossing. Used when a treadmill run's distance is corrected after the fact. Points must be in time order.
+    static func splits(fromCurve curve: [(time: Double, distance: Double)], splitLength: Double) -> [Split] {
+        var tracker = RunMetricsTracker(splitLength: splitLength)
+        var lastTime = 0.0
+        for point in curve where point.distance > tracker.distance || point.time > lastTime {
+            tracker.advance(by: max(0, point.distance - tracker.distance), movingTime: point.time)
+            lastTime = point.time
+        }
+        tracker.finalizeSplits(movingTime: lastTime)
+        return tracker.splits
+    }
+
     /// Rolling pace in seconds per kilometer over the last `paceWindowSeconds`.
     func currentPace(movingTime: Double) -> Double? {
         guard let first = paceWindow.first(where: { movingTime - $0.time <= paceWindowSeconds }) else { return nil }
@@ -136,6 +149,7 @@ struct RunMetricsTracker {
         return result
     }
 
+    @discardableResult
     private mutating func advance(by meters: Double, movingTime: Double) -> [Split] {
         let previousTime = paceWindow.last?.time ?? splitStartTime
         let previousDistance = distance

@@ -40,14 +40,18 @@ final class RunSession {
     var nextStep: FlatStep? { engine.nextStep }
     var isWorkoutComplete: Bool { engine.isFinished }
     var isOpenEnded: Bool { engine.isOpenEnded }
-    var splits: [Split] { tracker.splits }
+    var splits: [Split] { correctedSplits ?? tracker.splits }
     var route: [RoutePoint] { tracker.route }
     private(set) var paceSamples: [PaceSample] = []
+
+    /// Indoor run: distance comes from the pedometer instead of GPS. Set before `begin()`.
+    var isTreadmill = false
 
     var currentTarget: PaceRange? { currentStep.flatMap { zones.range(for: $0.zone) } }
 
     // Collaborators
     private let location: LocationProviding
+    private let pedometer: PedometerProviding?
     private let voice: VoiceCoaching
     private let haptics: HapticsProviding
     private let liveActivity: RunActivityControlling
@@ -58,18 +62,23 @@ final class RunSession {
     private var resumedAt: Date?
     private var tickTask: Task<Void, Never>?
     private var locationTask: Task<Void, Never>?
+    private var lastPedometerMeters: Double = 0
+    /// (moving time, distance) after each treadmill update, used to rebuild splits if the distance is corrected.
+    private var distanceCurve: [(time: Double, distance: Double)] = []
     private var lastPaceAlertTime: Double = -.infinity
     private var lastActivityUpdate: Date = .distantPast
     private var lastSampleTime: Double = -.infinity
     private var announcedComplete = false
 
     init(workout: WorkoutTemplate?, zones: PaceZones, units: UnitSystem, voiceSettings: VoiceSettings,
-         location: LocationProviding, voice: VoiceCoaching, haptics: HapticsProviding, liveActivity: RunActivityControlling) {
+         location: LocationProviding, pedometer: PedometerProviding? = nil,
+         voice: VoiceCoaching, haptics: HapticsProviding, liveActivity: RunActivityControlling) {
         self.workout = workout
         self.zones = zones
         self.units = units
         self.voiceSettings = voiceSettings
         self.location = location
+        self.pedometer = pedometer
         self.voice = voice
         self.haptics = haptics
         self.liveActivity = liveActivity
@@ -86,7 +95,12 @@ final class RunSession {
     /// Starts GPS immediately (so it can lock on during the countdown), then begins the run.
     func begin(countdown: Int = 3) {
         guard phase == .ready else { return }
-        startLocationUpdates()
+        if isTreadmill {
+            gpsStatus = .good
+            startPedometerUpdates()
+        } else {
+            startLocationUpdates()
+        }
         Task {
             for value in stride(from: countdown, through: 1, by: -1) {
                 phase = .countdown(value)
@@ -107,7 +121,7 @@ final class RunSession {
         } else {
             sayAlways("Run started.")
         }
-        liveActivity.start(attributes: RunActivityAttributes(workoutTitle: workout?.title ?? "Free Run",
+        liveActivity.start(attributes: RunActivityAttributes(workoutTitle: title,
                                                              paceUnit: units.paceSuffix, distanceUnit: units.distanceAbbreviation),
                            state: activityState())
         tickTask = Task { [weak self] in
@@ -154,6 +168,7 @@ final class RunSession {
         tickTask?.cancel()
         locationTask?.cancel()
         location.stop()
+        pedometer?.stop()
 
         // Close the step in progress (counts unless barely started) and mark the rest as skipped.
         if let completion = engine.skip(movingTime: movingTime, distance: distance) {
@@ -173,14 +188,73 @@ final class RunSession {
         tickTask?.cancel()
         locationTask?.cancel()
         location.stop()
+        pedometer?.stop()
         voice.stop()
         liveActivity.end(activityState())
         phase = .finished
     }
 
+    /// Name used for the run when there is no planned workout.
+    var title: String { workout?.title ?? (isTreadmill ? "Treadmill Run" : "Free Run") }
+
     var hasMeaningfulData: Bool { distance > 100 || movingTime > 60 }
 
+    /// Replaces the step-estimated treadmill distance with the one shown on the machine, rescaling
+    /// splits, pace samples and step distances to match. Only valid after `finish()`.
+    func correctTreadmillDistance(to meters: Double) {
+        guard isTreadmill, phase == .finished, meters > 0 else { return }
+        let factor = distance > 0 ? meters / distance : 0
+        if factor > 0 {
+            correctedSplits = RunMetricsTracker.splits(
+                fromCurve: distanceCurve.map { (time: $0.time, distance: $0.distance * factor) } + [(time: movingTime, distance: meters)],
+                splitLength: units.metersPerUnit)
+            paceSamples = paceSamples.map { sample in
+                var copy = sample
+                copy.distanceMeters *= factor
+                copy.paceSecondsPerKm /= factor
+                return copy
+            }
+            stepResults = stepResults.map { result in
+                var copy = result
+                copy.distanceMeters *= factor
+                return copy
+            }
+        } else {
+            // Nothing was measured: assume an even pace for the whole run.
+            correctedSplits = RunMetricsTracker.splits(fromCurve: [(0, 0), (movingTime, meters)],
+                                                       splitLength: units.metersPerUnit)
+        }
+        distance = meters
+    }
+
+    private var correctedSplits: [Split]?
+
     // MARK: Updates
+
+    private func startPedometerUpdates() {
+        guard let pedometer else { return }
+        let stream = pedometer.start()
+        lastPedometerMeters = 0
+        locationTask = Task { [weak self] in
+            for await meters in stream {
+                self?.handlePedometer(meters)
+            }
+        }
+    }
+
+    private func handlePedometer(_ cumulative: Double) {
+        let delta = max(0, cumulative - lastPedometerMeters)
+        lastPedometerMeters = cumulative
+        guard phase == .running, delta > 0 else { return }
+        let time = currentMovingTime()
+        let before = tracker.splits.count
+        tracker.addDistance(delta, movingTime: time)
+        distanceCurve.append((time, tracker.distance))
+        for split in tracker.splits.dropFirst(before) {
+            announce(split)
+        }
+        update(time: time)
+    }
 
     private func startLocationUpdates() {
         let stream = location.start()
@@ -209,7 +283,7 @@ final class RunSession {
 
     private func tick() {
         guard phase == .running else { return }
-        if let last = tracker.lastFixDate, Date().timeIntervalSince(last) > 10 {
+        if !isTreadmill, let last = tracker.lastFixDate, Date().timeIntervalSince(last) > 10 {
             gpsStatus = .weak
         }
         update(time: currentMovingTime())

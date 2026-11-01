@@ -43,7 +43,12 @@ struct RunningView: View {
     private var stepPanel: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                gpsBadge
+                if session.isTreadmill {
+                    Label("Treadmill", systemImage: "figure.run.treadmill")
+                        .font(.caption.weight(.semibold))
+                } else {
+                    gpsBadge
+                }
                 Spacer()
                 if let step = session.currentStep {
                     Text(step.zone.displayName.uppercased())
@@ -80,7 +85,7 @@ struct RunningView: View {
                 }
                 .font(.subheadline.weight(.semibold))
             } else {
-                Text(session.isWorkoutComplete ? "Workout complete 🎉" : (session.workout == nil ? "Free run" : "Get ready"))
+                Text(session.isWorkoutComplete ? "Workout complete 🎉" : (session.workout == nil ? (session.isTreadmill ? "Treadmill run" : "Free run") : "Get ready"))
                     .font(.title.bold())
                 Text(session.isWorkoutComplete ? "Cool down and end the run when you're ready." : "Run at whatever pace feels right.")
                     .font(.subheadline)
