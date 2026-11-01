@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Single place to rename/rebrand the app (also update PRODUCT_NAME / display name in the project).
 enum AppBrand {
-    static let name = "StridePlan"
+    static let name = "Kadence"
     static let tagline = "Plans that run with you."
 
     /// Bold accent used across the app (also defined as the AccentColor asset).

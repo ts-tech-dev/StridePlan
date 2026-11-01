@@ -1,0 +1,121 @@
+name: TestFlight
+
+# Archives a Release build, signs it with Xcode's cloud-managed signing (no certificates or
+# profiles stored in the repo) and uploads it to App Store Connect / TestFlight.
+#
+# Repository secrets:   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (App Store Connect API key, Admin role)
+# Repository variables: BUNDLE_ID_PREFIX (e.g. com.yourname.kadence), DEVELOPMENT_TEAM (10-char Team ID)
+
+on:
+  workflow_dispatch:
+    inputs:
+      marketing_version:
+        description: "Version shown in TestFlight (blank = keep project value)"
+        required: false
+        default: ""
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      BUNDLE_ID_PREFIX: ${{ vars.BUNDLE_ID_PREFIX }}
+      DEVELOPMENT_TEAM: ${{ vars.DEVELOPMENT_TEAM }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      # Unique, ever-increasing build number per upload.
+      BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check configuration
+        run: |
+          missing=0
+          for v in BUNDLE_ID_PREFIX DEVELOPMENT_TEAM ASC_KEY_ID ASC_ISSUER_ID; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not set (see the header of testflight.yml)"; missing=1; fi
+          done
+          [ -n "${{ secrets.ASC_KEY_P8 }}" ] || { echo "::error::ASC_KEY_P8 secret is not set"; missing=1; }
+          exit $missing
+
+      - name: Select newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_*.app | grep -v -i beta | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Write API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
+          echo "KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Archive
+        run: |
+          set -o pipefail
+          EXTRA=()
+          if [ -n "${{ inputs.marketing_version }}" ]; then EXTRA+=("MARKETING_VERSION=${{ inputs.marketing_version }}"); fi
+          xcodebuild archive \
+            -project StridePlan.xcodeproj \
+            -scheme StridePlan \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/Kadence.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            BUNDLE_ID_PREFIX="$BUNDLE_ID_PREFIX" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            "${EXTRA[@]}" \
+            2>&1 | tee archive.log | grep -E "error:|warning: .*[Ss]ign|\*\* ARCHIVE" || true
+          test -d "$RUNNER_TEMP/Kadence.xcarchive" || { echo "::error::Archive failed, see archive.log artifact"; exit 1; }
+
+      - name: Export and upload to App Store Connect
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>${DEVELOPMENT_TEAM}</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Kadence.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            2>&1 | tee export.log
+          echo "Uploaded build $BUILD_NUMBER. It appears in App Store Connect > TestFlight after processing (10-30 min)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testflight-logs
+          path: |
+            archive.log
+            export.log
+          if-no-files-found: ignore
+
+      - name: Remove API key
+        if: always()
+        run: rm -f "$KEY_PATH"

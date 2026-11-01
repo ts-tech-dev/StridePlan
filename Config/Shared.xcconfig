@@ -1,5 +1,5 @@
 // Change these to rebrand / sign the app. Referenced by every target in the project.
-APP_DISPLAY_NAME = StridePlan
-BUNDLE_ID_PREFIX = com.example.strideplan
+APP_DISPLAY_NAME = Kadence
+BUNDLE_ID_PREFIX = cc.tstech.kadence
 // Set your Apple Developer Team ID here (or pick a team in Signing & Capabilities).
-DEVELOPMENT_TEAM =
+DEVELOPMENT_TEAM = D4A327ZNFD
