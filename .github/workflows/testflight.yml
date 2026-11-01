@@ -1,7 +1,7 @@
 name: TestFlight
 
-# Archives a Release build, signs it with Xcode's cloud-managed signing (no certificates or
-# profiles stored in the repo) and uploads it to App Store Connect / TestFlight.
+# Archives a Release build, signs it manually with the Apple Distribution certificate (from secrets)
+# and App Store profiles created on the fly via the API, and uploads it to App Store Connect / TestFlight.
 #
 # Repository secrets:   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (App Store Connect API key, Admin role)
 #                       DIST_CERT_P12 (base64 Apple Distribution .p12), DIST_CERT_PASSWORD
@@ -77,6 +77,14 @@ jobs:
           rm -f "$RUNNER_TEMP/dist.p12"
           security find-identity -v -p codesigning "$KEYCHAIN"
 
+      # Fresh App Store profiles for the app and the Live Activity extension (no devices needed).
+      - name: Create provisioning profiles
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet 'pyjwt[crypto]'
+          "$RUNNER_TEMP/venv/bin/python" scripts/asc_profiles.py "$ASC_KEY_ID" "$ASC_ISSUER_ID" "$KEY_PATH" \
+            "$BUNDLE_ID_PREFIX:HEALTHKIT" "$BUNDLE_ID_PREFIX.LiveActivity"
+
       - name: Archive
         run: |
           set -o pipefail
@@ -88,13 +96,11 @@ jobs:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$RUNNER_TEMP/Kadence.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             BUNDLE_ID_PREFIX="$BUNDLE_ID_PREFIX" \
             DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER='$(PRODUCT_BUNDLE_IDENTIFIER) AppStore' \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             "${EXTRA[@]}" \
             2>&1 | tee archive.log | grep -E "error:|warning: .*[Ss]ign|\*\* ARCHIVE" || true
@@ -110,8 +116,14 @@ jobs:
           <dict>
             <key>method</key><string>app-store-connect</string>
             <key>destination</key><string>upload</string>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
             <key>teamID</key><string>${DEVELOPMENT_TEAM}</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE_ID_PREFIX}</key><string>${BUNDLE_ID_PREFIX} AppStore</string>
+              <key>${BUNDLE_ID_PREFIX}.LiveActivity</key><string>${BUNDLE_ID_PREFIX}.LiveActivity AppStore</string>
+            </dict>
             <key>uploadSymbols</key><true/>
             <key>manageAppVersionAndBuildNumber</key><false/>
           </dict>
@@ -121,7 +133,6 @@ jobs:
             -archivePath "$RUNNER_TEMP/Kadence.xcarchive" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
             -exportPath "$RUNNER_TEMP/export" \
-            -allowProvisioningUpdates \
             -authenticationKeyPath "$KEY_PATH" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
