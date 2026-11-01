@@ -11,7 +11,8 @@ writing those files consistently and checking training-load rules:
 
 Usage:  python3 scripts/generate_plans.py            # writes JSON + prints a load report
         python3 scripts/generate_plans.py --check    # only validates, writes nothing
-Hand-written plans can live alongside generated ones; this script only overwrites files it owns.
+The script owns every "v2-*.json" file (stale ones are deleted). The original plans are frozen
+JSON marked "retired": hidden from the catalog but still loadable for runners already on them.
 """
 import json
 import os
@@ -135,13 +136,13 @@ def progression(wid, km):
         step("run", d(last * 1000), "tempo"),
     ], "Start easy and get gradually faster each third. A great way to practise finishing strong.")
 
-def run_walk(wid, reps, run_s, walk_s, title=None):
+def run_walk(wid, reps, run_s, walk_s, title=None, cooldown=300):
     def label(s):
         return f"{s // 60} min" if s % 60 == 0 else f"{s} s"
     return workout(wid, "easy", title or f"Run {label(run_s)} / Walk {label(walk_s)} × {reps}", [
         step("warmup", t(300), "walk", "Brisk walk to warm up"),
         rep(reps, [step("run", t(run_s), "easy"), step("walk", t(walk_s), "walk")]),
-        step("cooldown", t(300), "walk"),
+        step("cooldown", t(cooldown), "walk"),
     ], ("Run at a gentle, conversational jog and walk briskly in between. Finishing every interval "
         "matters far more than speed."))
 
@@ -167,13 +168,18 @@ def race(wid, meters, title=None):
     ], (f"This is what you trained for. Start controlled, settle into goal pace, and save something "
         f"for the last part. Enjoy your {name}!"))
 
-def race_cooldown_free(wid, meters, title):
-    return workout(wid, "race", title, [step("run", d(meters), "race")],
-                   "Run the full distance at a comfortable, steady effort. You've earned this!")
-
 # ---------------------------------------------------------------------------
 # Plans
 # ---------------------------------------------------------------------------
+
+# Plan library v2: every plan family (goal + level) comes in several lengths. IDs carry a "v2-"
+# prefix so they never collide with the original hand-written plans, which stay in the bundle
+# (marked "retired") so runners already following one keep a working schedule.
+
+ID_PREFIX = "v2-"
+LENGTHS = [8, 10, 12]
+MARATHON_LENGTHS = {"beginner": [16, 18], "intermediate": [12, 16, 18], "advanced": [12, 16, 18]}
+
 
 def plan(pid, title, goal, level, rpw, desc, phases, weeks):
     return {"id": pid, "title": title, "goal": goal, "level": level, "weeks": len(weeks),
@@ -185,334 +191,280 @@ def W(n):
     """Prefix helper: W(3)('easy-1') -> 'w3-easy-1'."""
     return lambda s: f"w{n}-{s}"
 
+def half_km(x):
+    return max(0.5, round(x * 2) / 2)
 
-def couch_to_5k():
-    progression_ = [  # (reps, run, walk) per week; three sessions each
-        [(8, 60, 90)] * 3,
-        [(6, 90, 120)] * 3,
-        [(4, 180, 90), (4, 180, 90), (5, 150, 90)],
-        [(3, 300, 150), (3, 300, 150), (3, 300, 120)],
-        [(3, 300, 120), (2, 480, 300), None],   # None → continuous 20 min
-        [(2, 600, 180), (2, 600, 120), "c22"],
-        ["c25", "c25", "c25"],
-        ["c28", "c28", "c28"],
-        ["c30", "c20", "race"],
-    ]
+
+# ---------------------------------------------------------------------------
+# Couch to 5K: short run/walk sessions (about 20 minutes in week 1) that grow gently.
+# Rows are (reps, run seconds, walk seconds) or "cNN" for a continuous NN-minute run.
+# ---------------------------------------------------------------------------
+
+C25K_LADDER = [
+    [(6, 30, 90)] * 3,                                   # 1: 3 min running in 20 min
+    [(8, 30, 90)] * 3,                                   # 2
+    [(6, 60, 90)] * 3,                                   # 3
+    [(7, 60, 90), (7, 60, 90), (8, 60, 90)],             # 4
+    [(6, 90, 90)] * 3,                                   # 5
+    [(5, 120, 90)] * 3,                                  # 6
+    [(4, 180, 90)] * 3,                                  # 7
+    [(4, 240, 90), (4, 240, 90), (3, 300, 120)],         # 8
+    [(3, 300, 90), (3, 300, 90), (2, 480, 120)],         # 9
+    [(2, 600, 120), (2, 600, 120), "c15"],               # 10
+    ["c20", "c22", "c25"],                               # 11
+    ["c20", "c15", "race"],                              # 12
+]
+C25K_ROWS = {12: list(range(12)), 10: [0, 2, 4, 5, 6, 7, 8, 9, 10, 11], 8: [0, 2, 4, 6, 8, 9, 10, 11]}
+C25K_PHASES = {12: [("Foundation", 1, 4), ("Build", 5, 9), ("Finish", 10, 12)],
+               10: [("Foundation", 1, 3), ("Build", 4, 8), ("Finish", 9, 10)],
+               8: [("Foundation", 1, 3), ("Build", 4, 6), ("Finish", 7, 8)]}
+C25K_PACE_NOTE = {
+    12: "The gentlest build: ideal if you're new to exercise or returning after a long break.",
+    10: "A steady build for brand-new runners.",
+    8: "A quicker build if you already walk briskly for 30 minutes most days.",
+}
+
+
+def couch_to_5k(n):
     weeks = []
-    for i, sessions in enumerate(progression_):
+    for i, row in enumerate(C25K_ROWS[n]):
         w = W(i + 1)
         out = []
-        for j, s in enumerate(sessions):
+        for j, s in enumerate(C25K_LADDER[row]):
             sid = w(f"run-{j + 1}")
-            if s is None:
-                out.append(continuous(sid, 20, "First 20-minute run"))
-            elif s == "race":
-                out.append(race_cooldown_free(w("5k"), 5000, "Your First 5K"))
+            if s == "race":
+                out.append(workout(w("5k"), "race", "Your First 5K", [step("run", d(5000), "race")],
+                                   "Run at an easy, comfortable effort. Short walk breaks are completely "
+                                   "fine: finishing is the goal. You've earned this!"))
             elif isinstance(s, str):
                 out.append(continuous(sid, int(s[1:])))
             else:
-                out.append(run_walk(sid, *s))
+                out.append(run_walk(sid, *s, cooldown=180))
         weeks.append(out)
-    return plan("couch-to-5k-beginner-9w", "Couch to 5K", "couchTo5K", "beginner", (3, 3),
-                "From your first steps to running 5K without stopping. Gentle run/walk intervals "
-                "that grow a little every week.",
-                [("Foundation", 1, 3), ("Build", 4, 7), ("Finish", 8, 9)], weeks)
+    desc = ("From your first steps to running 5K. Sessions start at about 20 minutes with 30-second "
+            "jogs and grow a little each week. Repeat any week that feels hard.")
+    p = plan(f"{ID_PREFIX}couch-to-5k-beginner-{n}w", "Couch to 5K", "couchTo5K", "beginner", (3, 3),
+             desc, C25K_PHASES[n], weeks)
+    p["fitNote"] = C25K_PACE_NOTE[n]
+    return p
 
 
-def five_k_beginner():
-    spec = [  # (easy, quality, long)
-        (3, ("fartlek", 6), 4), (3, ("fartlek", 8), 4.5), (3.5, ("hills", 5), 5), (3, ("fartlek", 6), 4),
-        (4, ("tempo", 12), 5.5), (4, ("intervals", 6, 400), 6), (3.5, ("tempo", 15), 5), (3, ("intervals", 4, 400), None),
-    ]
-    weeks = []
-    for i, (e, q, lr) in enumerate(spec):
-        w = W(i + 1)
-        wk = [easy(w("easy"), e), quality(w, q)]
-        wk.append(long_run(w("long"), lr) if lr else race(w("race"), 5000))
-        weeks.append(wk)
-    return plan("5k-beginner-8w", "5K – Beginner", "fiveK", "beginner", (3, 3),
-                "Three runs a week to take you from running regularly to a confident, well-paced 5K.",
-                [("Base", 1, 4), ("Build", 5, 7), ("Taper", 8, 8)], weeks)
+# ---------------------------------------------------------------------------
+# Periodised plan engine for every other family.
+# ---------------------------------------------------------------------------
+
+LEVEL_SCALE = {"beginner": 0.75, "intermediate": 1.0, "advanced": 1.25}
+
+# Per goal and level: runs/week, long run start->peak km, easy run start->peak km, recovery run km.
+FAMILIES = {
+    ("fiveK", "beginner"):      dict(runs=3, long=(4, 6.5), easy=(3, 4.5)),
+    ("fiveK", "intermediate"):  dict(runs=4, long=(6.5, 9.5), easy=(5, 6.5)),
+    ("fiveK", "advanced"):      dict(runs=5, long=(11, 15), easy=(7, 9), rec=(5, 6)),
+    ("tenK", "beginner"):       dict(runs=3, long=(5, 9.5), easy=(4, 5.5)),
+    ("tenK", "intermediate"):   dict(runs=4, long=(8, 13), easy=(5, 7)),
+    ("tenK", "advanced"):       dict(runs=5, long=(13, 19), easy=(8, 10), rec=(5, 7)),
+    ("halfMarathon", "beginner"):     dict(runs=3, long=(7, 16), easy=(4, 6)),
+    ("halfMarathon", "intermediate"): dict(runs=4, long=(10, 19), easy=(5.5, 7.5)),
+    ("halfMarathon", "advanced"):     dict(runs=5, long=(15, 22), easy=(9, 11), rec=(6, 7)),
+    ("marathon", "beginner"):     dict(runs=4, long=(11, 30), easy=(5, 8)),
+    ("marathon", "intermediate"): dict(runs=5, long=(16, 32), easy=(7, 10), rec=(5, 7)),
+    ("marathon", "advanced"):     dict(runs=5, long=(19, 32), easy=(10, 13), rec=(6, 8)),
+    ("baseBuilding", "beginner"):     dict(runs=3, long=(4, 7), easy=(3, 4.5)),
+    ("baseBuilding", "intermediate"): dict(runs=4, long=(9, 14), easy=(5, 6.5)),
+    ("baseBuilding", "advanced"):     dict(runs=5, long=(13, 18), easy=(8, 10), rec=(6, 7)),
+}
+
+GOAL_INFO = {
+    "fiveK": dict(slug="5k", name="5K", race=5000, taper=1),
+    "tenK": dict(slug="10k", name="10K", race=10000, taper=1),
+    "halfMarathon": dict(slug="half-marathon", name="Half Marathon", race=21097.5, taper=2),
+    "marathon": dict(slug="marathon", name="Marathon", race=42195, taper=3),
+    "baseBuilding": dict(slug="general-fitness", name="General Fitness", race=None, taper=0),
+}
+
+DESCRIPTIONS = {
+    ("fiveK", "beginner"): "Three runs a week to take you from running regularly to a confident, well-paced 5K.",
+    ("fiveK", "intermediate"): "Sharpen your 5K with classic track intervals, tempo runs and a solid aerobic base.",
+    ("fiveK", "advanced"): "High-quality speed work for experienced racers chasing a new 5K personal best.",
+    ("tenK", "beginner"): "Step up from 5K to 10K with three runs a week and gentle introductions to faster running.",
+    ("tenK", "intermediate"): "Four runs a week mixing tempo, kilometre repeats and steady long runs for a faster 10K.",
+    ("tenK", "advanced"): "Threshold-heavy training for seasoned runners targeting a 10K personal best.",
+    ("halfMarathon", "beginner"): "Your first 21.1 km. Patient long-run progression with just enough quality to feel strong on race day.",
+    ("halfMarathon", "intermediate"): "Build to a confident half with tempo work and progressive long runs with race-pace finishes.",
+    ("halfMarathon", "advanced"): "A demanding block of threshold work and race-specific long runs for experienced half marathoners.",
+    ("marathon", "beginner"): "Patient weeks to your first marathon finish, built around a steadily growing long run.",
+    ("marathon", "intermediate"): "For runners with a marathon or several halves behind them. Race-pace long runs and threshold work.",
+    ("marathon", "advanced"): "Big weeks, marathon-pace long runs and sustained threshold work for experienced marathoners.",
+    ("baseBuilding", "beginner"): "Make running a habit. Easy, consistent mileage that builds durability without burnout.",
+    ("baseBuilding", "intermediate"): "Raise your aerobic engine between race blocks: mostly easy miles with light, playful speed.",
+    ("baseBuilding", "advanced"): "High-volume aerobic building for experienced runners, with hills and progression runs to stay sharp.",
+}
+
+G_LONG, G_EASY = 1.10, 1.07   # max growth per progression week
 
 
-def quality(w, q):
-    kind = q[0]
-    if kind == "fartlek":
-        return fartlek(w("fartlek"), q[1])
-    if kind == "hills":
-        return hills(w("hills"), q[1])
-    if kind == "tempo":
-        return tempo(w("tempo"), q[1])
-    if kind == "threshold":
-        return tempo(w("threshold"), q[1], zone="threshold", blocks=q[2] if len(q) > 2 else 1)
-    if kind == "intervals":
-        return intervals(w("intervals"), q[1], q[2], zone=q[3] if len(q) > 3 else "interval",
-                         recover=q[4] if len(q) > 4 else 90)
-    if kind == "time_intervals":
-        return time_intervals(w("intervals"), q[1], q[2])
-    if kind == "progression":
-        return progression(w("progression"), q[1])
-    raise ValueError(kind)
+def quality_menu(goal, level, phase, f, w):
+    """Candidate quality sessions for a week; f is progress through the build (0..1)."""
+    L = LEVEL_SCALE[level]
+    n = lambda lo, hi: max(3, round((lo + (hi - lo) * f) * L))
+    m = lambda lo, hi: max(8, round((lo + (hi - lo) * f) * L))
+    blocks = 2 if level == "beginner" else 3
+    if phase == "base" or goal == "baseBuilding":
+        menu = [fartlek(w("fartlek"), n(6, 10)), hills(w("hills"), n(5, 8))]
+        if goal in ("marathon", "baseBuilding", "halfMarathon"):
+            menu.append(progression(w("progression"), half_km(6 + 3 * f * L)))
+        return menu
+    table = {
+        ("fiveK", "build"): [intervals(w("intervals"), n(6, 10), 400), tempo(w("tempo"), m(12, 20)),
+                             intervals(w("intervals"), n(4, 6), 800, recover=120)],
+        ("fiveK", "peak"): [intervals(w("intervals"), n(3, 5), 1000, recover=150),
+                            intervals(w("intervals"), n(8, 12), 400, zone="repetition"),
+                            tempo(w("tempo"), m(15, 20))],
+        ("tenK", "build"): [tempo(w("tempo"), m(15, 25)), intervals(w("intervals"), n(5, 7), 800, recover=120),
+                            tempo(w("threshold"), m(8, 10), zone="threshold", blocks=2)],
+        ("tenK", "peak"): [intervals(w("intervals"), n(4, 6), 1000, recover=120),
+                           tempo(w("threshold"), m(10, 12), zone="threshold", blocks=blocks),
+                           tempo(w("tempo"), m(20, 25))],
+        ("halfMarathon", "build"): [tempo(w("tempo"), m(20, 30)), intervals(w("intervals"), n(4, 6), 1000, recover=120),
+                                    tempo(w("threshold"), m(10, 12), zone="threshold", blocks=2)],
+        ("halfMarathon", "peak"): [tempo(w("threshold"), m(10, 15), zone="threshold", blocks=blocks),
+                                   tempo(w("tempo"), m(25, 35)), intervals(w("intervals"), n(3, 5), 1600, recover=150)],
+        ("marathon", "build"): [tempo(w("tempo"), m(20, 30)), progression(w("progression"), half_km(8 + 4 * f * L)),
+                                tempo(w("threshold"), m(10, 12), zone="threshold", blocks=2)],
+        ("marathon", "peak"): [tempo(w("tempo"), m(25, 40)), tempo(w("threshold"), m(12, 15), zone="threshold", blocks=blocks),
+                               progression(w("progression"), half_km(10 + 4 * f * L))],
+    }
+    return table[(goal, phase)]
 
 
-def generic_race_plan(pid, title, goal, level, rpw, desc, phases, race_m, spec):
-    """spec rows: dict(easy=[km...], q=[quality...], long=km or (km, finish_km, zone), rec=km)"""
-    weeks = []
-    for i, row in enumerate(spec):
-        w = W(i + 1)
-        wk = []
-        for j, km in enumerate(row.get("easy", [])):
-            wk.append(easy(w(f"easy-{j + 1}"), km))
-        if "strides" in row:
-            wk.append(easy_strides(w("strides"), row["strides"]))
-        if "rec" in row:
-            wk.append(recovery(w("recovery"), row["rec"]))
-        for q in row.get("q", []):
-            wk.append(quality(w, q))
-        if "cross" in row:
-            wk.append(cross(w("cross"), row["cross"]))
-        lr = row.get("long")
-        if lr == "race":
-            wk.append(race(w("race"), race_m))
-        elif isinstance(lr, tuple):
-            wk.append(long_run(w("long"), lr[0], lr[1], lr[2]))
-        elif lr:
-            wk.append(long_run(w("long"), lr))
-        weeks.append(wk)
-    return plan(pid, title, goal, level, rpw, desc, phases, weeks)
+def engine_plan(goal, level, n):
+    cfg, info = FAMILIES[(goal, level)], GOAL_INFO[goal]
+    taper = info["taper"]
+    build = n - taper
+    cutbacks = {wk for wk in range(4, build + 1, 4) if wk != build or not info["race"]}
+    progress_weeks = [wk for wk in range(1, build + 1) if wk not in cutbacks]
+    steps = max(1, len(progress_weeks) - 1)
+
+    def ramp(lo, hi, g):
+        start = max(lo, hi / g ** steps)
+        r = (hi / start) ** (1 / steps)
+        return {wk: start * r ** j for j, wk in enumerate(progress_weeks)}
+
+    long_v = ramp(*cfg["long"], G_LONG)
+    easy_v = ramp(*cfg["easy"], G_EASY)
+    rec_v = ramp(*cfg["rec"], G_EASY) if "rec" in cfg else None
+    fast_finish = goal in ("halfMarathon", "marathon") and level != "beginner"
+
+    weeks, last_prog, k, peak_km, prev_long = [], progress_weeks[0], 0, 0.0, 0.0
+
+    def render(specs):
+        out = []
+        for kind, wid, km in specs:
+            if kind == "easy":
+                out.append(easy(wid, km))
+            elif kind == "strides":
+                out.append(easy_strides(wid, km))
+            elif kind == "recovery":
+                out.append(recovery(wid, km))
+            elif kind == "long_ff":
+                out.append(long_run(wid, km, half_km(km * 0.25), "race"))
+            else:
+                out.append(long_run(wid, km))
+        return out
+    base_end = max(1, round(build * 0.4))
+    for wk in range(1, n + 1):
+        w = W(wk)
+        out = []
+        runs = cfg["runs"]
+        if wk <= build and wk not in cutbacks:          # progression week
+            last_prog = wk
+            f = progress_weeks.index(wk) / steps
+            phase = "base" if wk <= base_end else ("build" if f < 0.75 or goal == "baseBuilding" else "peak")
+            long_km, easy_km = long_v[wk], easy_v[wk]
+            rec_km = rec_v[wk] if rec_v else None
+            menu = quality_menu(goal, level, phase, f, w)
+            q = menu[k % len(menu)]
+            k += 1
+            if goal == "baseBuilding" and level == "beginner":
+                q = None
+            ff = fast_finish and phase == "peak" and k % 2 == 0
+        elif wk <= build:                               # cutback week
+            f = progress_weeks.index(last_prog) / steps
+            long_km, easy_km = long_v[last_prog] * 0.68, easy_v[last_prog] * 0.75
+            rec_km = rec_v[last_prog] * 0.75 if rec_v else None
+            q = (None if goal == "baseBuilding" and level == "beginner"
+                 else fartlek(w("fartlek"), 4 if level == "beginner" else 6))
+            ff = False
+        elif wk < n:                                    # taper week (not race week)
+            scale = [0.8, 0.65][wk - build - 1] if taper == 3 else 0.7
+            long_km, easy_km = long_v[last_prog] * scale, easy_v[last_prog] * (scale + 0.1)
+            rec_km = rec_v[last_prog] * scale if rec_v else None
+            q = (intervals(w("intervals"), 5, 800, recover=120) if goal in ("fiveK", "tenK")
+                 else tempo(w("tempo"), 20 if level != "beginner" else 15))
+            ff = False
+        else:                                           # race week
+            out = [easy(w(f"easy-{j + 1}"), min(5, half_km(easy_v[last_prog] * 0.6))) for j in range(runs - 2)]
+            if rec_v:
+                out[-1] = recovery(w("recovery"), 4)
+            out.append(fartlek(w("fartlek"), 4, cd=300) if goal in ("fiveK", "tenK") else tempo(w("tempo"), 10))
+            out.append(race(w("race"), info["race"]))
+            weeks.append(out)
+            continue
+
+        n_easy = runs - 1 - (1 if q else 0) - (1 if rec_km else 0)
+        strides_ok = level != "beginner" or wk > build // 2
+        specs = []   # [kind, id, km] for the adjustable runs; quality stays fixed
+        for j in range(n_easy):
+            km = half_km(easy_km * (0.9 if j else 1.0))
+            if j == n_easy - 1 and n_easy > 1 and strides_ok:
+                specs.append(["strides", w("strides"), km])
+            else:
+                specs.append(["easy", w(f"easy-{j + 1}"), km])
+        if rec_km:
+            specs.append(["recovery", w("recovery"), half_km(rec_km)])
+        specs.append(["long_ff" if ff else "long", w("long"), half_km(long_km)])
+        fixed = [q] if q else []
+        # Keep weekly volume within ~8% of the biggest week so far by trimming easy runs, then the long run.
+        # The long run is never cut below last week's, so it keeps progressing.
+        while peak_km and week_load(render(specs) + fixed)[0] > peak_km * 1.10 + 0.4:
+            easy_specs = [sp for sp in specs if sp[0] in ("easy", "strides", "recovery") and sp[2] > 2.5]
+            if easy_specs:
+                max(easy_specs, key=lambda sp: sp[2])[2] -= 0.5
+            elif specs[-1][2] - 0.5 >= prev_long:
+                specs[-1][2] -= 0.5
+            else:
+                break
+        workouts = render(specs)
+        out = workouts[:-1] + fixed + workouts[-1:]
+        weeks.append(out)
+        if wk <= build:
+            peak_km = max(peak_km, week_load(out)[0])
+            if wk not in cutbacks:
+                prev_long = specs[-1][2]
+
+    # Phases
+    phases = [("Base", 1, base_end)]
+    if build > base_end:
+        phases.append(("Build", base_end + 1, build))
+    if taper:
+        phases.append(("Taper", build + 1, n))
+    phases = [p for p in phases if p[1] <= p[2]]
+
+    title = f"{info['name']} – {level.capitalize()}"
+    p = plan(f"{ID_PREFIX}{info['slug']}-{level}-{n}w", title, goal, level, (cfg["runs"], cfg["runs"]),
+             "", phases, weeks)
+    p["description"] = DESCRIPTIONS[(goal, level)]
+    week1_km = week_load(weeks[0])[0]
+    p["fitNote"] = (f"Suits runners already doing about {round(week1_km)} km "
+                    f"({round(week1_km / 1.609)} mi) a week.")
+    return p
 
 
-def five_k_intermediate():
-    s = [
-        dict(easy=[5, 5], q=[("fartlek", 8)], long=7),
-        dict(easy=[5], strides=5, q=[("intervals", 6, 400)], long=7.5),
-        dict(easy=[5.5], strides=5, q=[("tempo", 15)], long=8),
-        dict(easy=[4, 4], q=[("fartlek", 6)], long=6.5),
-        dict(easy=[6], strides=5, q=[("intervals", 8, 400)], long=8.5),
-        dict(easy=[6], strides=5.5, q=[("tempo", 20)], long=9),
-        dict(easy=[6], strides=5.5, q=[("intervals", 5, 800, "interval", 120)], long=9),
-        dict(easy=[4], strides=4, q=[("intervals", 4, 400)], long="race"),
-    ]
-    return generic_race_plan("5k-intermediate-8w", "5K – Intermediate", "fiveK", "intermediate", (4, 4),
-                             "Sharpen your 5K with classic track intervals, tempo runs and a solid aerobic base.",
-                             [("Base", 1, 4), ("Build", 5, 7), ("Taper", 8, 8)], 5000, s)
+PLANS = [lambda n=n: couch_to_5k(n) for n in LENGTHS]
+for (goal, level) in FAMILIES:
+    for n in (MARATHON_LENGTHS[level] if goal == "marathon" else LENGTHS):
+        PLANS.append(lambda g=goal, l=level, n=n: engine_plan(g, l, n))
 
-
-def five_k_advanced():
-    s = [
-        dict(easy=[8, 7], rec=5, q=[("intervals", 8, 400, "interval", 75)], long=12),
-        dict(easy=[8, 8], rec=5, q=[("threshold", 8, 3)], long=13),
-        dict(easy=[8, 8], rec=6, q=[("intervals", 6, 800, "interval", 120)], long=14),
-        dict(easy=[7, 6], rec=5, q=[("fartlek", 10)], long=11),
-        dict(easy=[9, 8], rec=6, q=[("intervals", 5, 1000, "interval", 150)], long=14),
-        dict(easy=[9, 8], rec=6, q=[("intervals", 12, 400, "repetition", 90)], long=15),
-        dict(easy=[9, 8], rec=6, q=[("threshold", 10, 3)], long=15),
-        dict(easy=[6, 6], rec=4, q=[("intervals", 6, 400, "interval", 90)], long="race"),
-    ]
-    return generic_race_plan("5k-advanced-8w", "5K – Advanced", "fiveK", "advanced", (5, 5),
-                             "High-quality speed work for experienced racers chasing a new 5K personal best.",
-                             [("Base", 1, 4), ("Peak", 5, 7), ("Taper", 8, 8)], 5000, s)
-
-
-def ten_k_beginner():
-    s = [
-        dict(easy=[4], q=[("fartlek", 6)], long=5),
-        dict(easy=[4], q=[("fartlek", 8)], long=6),
-        dict(easy=[4.5], q=[("hills", 6)], long=6.5),
-        dict(easy=[4], q=[("fartlek", 6)], long=5),
-        dict(easy=[5], q=[("tempo", 15)], long=7),
-        dict(easy=[5], q=[("intervals", 6, 400)], long=8),
-        dict(easy=[5], q=[("tempo", 20)], long=9),
-        dict(easy=[4], q=[("fartlek", 6)], long=7),
-        dict(easy=[5], q=[("intervals", 5, 800, "interval", 120)], long=9),
-        dict(easy=[4], q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("10k-beginner-10w", "10K – Beginner", "tenK", "beginner", (3, 3),
-                             "Step up from 5K to 10K with three runs a week and gentle introductions to faster running.",
-                             [("Base", 1, 4), ("Build", 5, 9), ("Taper", 10, 10)], 10000, s)
-
-
-def ten_k_intermediate():
-    s = [
-        dict(easy=[5, 5], q=[("fartlek", 8)], long=9),
-        dict(easy=[6], strides=5, q=[("tempo", 15)], long=10),
-        dict(easy=[5.5], strides=5, q=[("intervals", 6, 800, "interval", 120)], long=10),
-        dict(easy=[5, 4], q=[("fartlek", 8)], long=8),
-        dict(easy=[6.5], strides=5.5, q=[("tempo", 20)], long=12),
-        dict(easy=[6.5], strides=5.5, q=[("intervals", 5, 1000, "interval", 150)], long=12),
-        dict(easy=[7], strides=6, q=[("threshold", 10, 2)], long=13),
-        dict(easy=[5, 5], q=[("hills", 8)], long=10),
-        dict(easy=[7], strides=6, q=[("intervals", 6, 1000, "interval", 120)], long=13),
-        dict(easy=[5], strides=4, q=[("tempo", 12)], long="race"),
-    ]
-    return generic_race_plan("10k-intermediate-10w", "10K – Intermediate", "tenK", "intermediate", (4, 4),
-                             "Four runs a week mixing tempo, kilometre repeats and steady long runs for a faster 10K.",
-                             [("Base", 1, 4), ("Build", 5, 9), ("Taper", 10, 10)], 10000, s)
-
-
-def ten_k_advanced():
-    s = [
-        dict(easy=[9, 8], rec=6, q=[("threshold", 10, 3)], long=15),
-        dict(easy=[9, 9], rec=6, q=[("intervals", 6, 1000, "interval", 120)], long=16),
-        dict(easy=[10, 9], rec=6, q=[("threshold", 12, 3)], long=17),
-        dict(easy=[8, 7], rec=5, q=[("fartlek", 10)], long=13),
-        dict(easy=[10, 9], rec=7, q=[("intervals", 5, 1600, "interval", 150)], long=18),
-        dict(easy=[10, 10], rec=7, q=[("threshold", 15, 2)], long=18),
-        dict(easy=[10, 10], rec=7, q=[("intervals", 8, 1000, "interval", 90)], long=19),
-        dict(easy=[7, 6], rec=5, q=[("tempo", 15)], long="race"),
-    ]
-    return generic_race_plan("10k-advanced-8w", "10K – Advanced", "tenK", "advanced", (5, 5),
-                             "Threshold-heavy training for seasoned runners targeting a 10K personal best.",
-                             [("Base", 1, 4), ("Peak", 5, 7), ("Taper", 8, 8)], 10000, s)
-
-
-def half_beginner():
-    s = [
-        dict(easy=[4, 4], long=6),
-        dict(easy=[4, 4], long=7),
-        dict(easy=[4, 4.5], long=8),
-        dict(easy=[4, 4], long=6),
-        dict(easy=[4.5], q=[("fartlek", 6)], long=8),
-        dict(easy=[5], q=[("tempo", 15)], long=9),
-        dict(easy=[5], q=[("hills", 6)], long=10),
-        dict(easy=[4, 4], long=8),
-        dict(easy=[5], q=[("tempo", 20)], long=12),
-        dict(easy=[4], q=[("fartlek", 8)], long=15),
-        dict(easy=[4], q=[("tempo", 15)], long=10),
-        dict(easy=[4], q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("half-marathon-beginner-12w", "Half Marathon – Beginner", "halfMarathon", "beginner", (3, 4),
-                             "Your first 21.1 km. Patient long-run progression with just enough quality to feel strong on race day.",
-                             [("Base", 1, 4), ("Build", 5, 10), ("Taper", 11, 12)], 21097.5, s)
-
-
-def half_intermediate():
-    s = [
-        dict(easy=[6, 5], q=[("fartlek", 8)], long=10),
-        dict(easy=[6], strides=5, q=[("tempo", 20)], long=11),
-        dict(easy=[6, 5], q=[("intervals", 6, 800, "interval", 120)], long=12),
-        dict(easy=[5, 5], q=[("fartlek", 6)], long=10),
-        dict(easy=[7, 5], q=[("tempo", 25)], long=13),
-        dict(easy=[7], strides=5, q=[("intervals", 5, 1000, "interval", 120)], long=13),
-        dict(easy=[7, 6], q=[("threshold", 10, 3)], long=(16, 4, "race")),
-        dict(easy=[6, 5], q=[("hills", 8)], long=12),
-        dict(easy=[8, 6], q=[("tempo", 30)], long=(18, 5, "race")),
-        dict(easy=[7, 6], q=[("intervals", 6, 1000, "interval", 120)], long=(16, 6, "race")),
-        dict(easy=[6, 5], q=[("tempo", 20)], long=12),
-        dict(easy=[5], strides=4, q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("half-marathon-intermediate-12w", "Half Marathon – Intermediate", "halfMarathon", "intermediate", (4, 5),
-                             "Build to a confident half with tempo work and progressive long runs with race-pace finishes.",
-                             [("Base", 1, 4), ("Build", 5, 10), ("Taper", 11, 12)], 21097.5, s)
-
-
-def half_advanced():
-    s = [
-        dict(easy=[9, 8], rec=6, q=[("threshold", 10, 3)], long=16),
-        dict(easy=[9, 9], rec=6, q=[("intervals", 6, 1000, "interval", 120)], long=17),
-        dict(easy=[10, 9], rec=6, q=[("tempo", 30)], long=18),
-        dict(easy=[8, 7], rec=5, q=[("fartlek", 10)], long=14),
-        dict(easy=[10, 9], rec=7, q=[("threshold", 12, 3)], long=(19, 5, "race")),
-        dict(easy=[10, 10], rec=7, q=[("intervals", 5, 1600, "interval", 150)], long=20),
-        dict(easy=[11, 10], rec=7, q=[("tempo", 35)], long=(21, 8, "race")),
-        dict(easy=[9, 8], rec=6, q=[("hills", 10)], long=16),
-        dict(easy=[11, 10], rec=7, q=[("threshold", 15, 3)], long=(22, 10, "race")),
-        dict(easy=[11, 10], rec=7, q=[("intervals", 6, 1600, "interval", 120)], long=(22, 6, "race")),
-        dict(easy=[11, 10], rec=7, q=[("threshold", 20, 2)], long=(23, 12, "race")),
-        dict(easy=[9, 8], rec=6, q=[("intervals", 8, 1000, "interval", 90)], long=18),
-        dict(easy=[8, 7], rec=5, q=[("tempo", 20)], long=14),
-        dict(easy=[6, 5], rec=4, q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("half-marathon-advanced-14w", "Half Marathon – Advanced", "halfMarathon", "advanced", (5, 5),
-                             "A demanding block of threshold and race-specific long runs for experienced half marathoners.",
-                             [("Base", 1, 4), ("Build", 5, 8), ("Peak", 9, 12), ("Taper", 13, 14)], 21097.5, s)
-
-
-def marathon_beginner():
-    s = [
-        dict(easy=[5, 5, 6], long=10),
-        dict(easy=[5, 5, 6], long=11),
-        dict(easy=[5, 6], q=[("fartlek", 6)], long=12),
-        dict(easy=[5, 5, 5], long=10),
-        dict(easy=[6, 6], q=[("tempo", 15)], long=14),
-        dict(easy=[6, 6], q=[("hills", 6)], long=15),
-        dict(easy=[6, 7], q=[("tempo", 20)], long=17),
-        dict(easy=[5, 5, 6], long=13),
-        dict(easy=[6, 7], q=[("tempo", 20)], long=19),
-        dict(easy=[6, 8], q=[("progression", 8)], long=21),
-        dict(easy=[7, 8], q=[("tempo", 25)], long=(24, 5, "race")),
-        dict(easy=[6, 6], q=[("fartlek", 8)], long=18),
-        dict(easy=[7, 8], q=[("tempo", 25)], long=26),
-        dict(easy=[7, 8], q=[("progression", 10)], long=(28, 6, "race")),
-        dict(easy=[7, 8], q=[("tempo", 30)], long=30),
-        dict(easy=[6, 7], q=[("tempo", 20)], long=22),
-        dict(easy=[5, 6], q=[("tempo", 15)], long=14),
-        dict(easy=[5], q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("marathon-beginner-18w", "Marathon – Beginner", "marathon", "beginner", (4, 4),
-                             "Eighteen patient weeks to your first marathon finish, built around a steadily growing long run.",
-                             [("Base", 1, 4), ("Build", 5, 12), ("Peak", 13, 15), ("Taper", 16, 18)], 42195, s)
-
-
-def marathon_intermediate():
-    s = [
-        dict(easy=[8, 7], rec=5, q=[("tempo", 20)], long=16),
-        dict(easy=[8, 7], rec=5, q=[("intervals", 6, 800, "interval", 120)], long=17),
-        dict(easy=[9, 8], rec=6, q=[("tempo", 25)], long=19),
-        dict(easy=[7, 7], rec=5, q=[("fartlek", 8)], long=15),
-        dict(easy=[9, 8], rec=6, q=[("threshold", 10, 3)], long=(21, 6, "race")),
-        dict(easy=[10, 8], rec=6, q=[("intervals", 5, 1000, "interval", 120)], long=23),
-        dict(easy=[10, 9], rec=6, q=[("tempo", 30)], long=(25, 8, "race")),
-        dict(easy=[8, 7], rec=5, q=[("hills", 8)], long=18),
-        dict(easy=[10, 9], rec=7, q=[("threshold", 12, 3)], long=(27, 10, "race")),
-        dict(easy=[11, 9], rec=7, q=[("intervals", 6, 1000, "interval", 120)], long=29),
-        dict(easy=[11, 10], rec=7, q=[("tempo", 35)], long=(30, 13, "race")),
-        dict(easy=[9, 8], rec=6, q=[("fartlek", 10)], long=22),
-        dict(easy=[11, 10], rec=7, q=[("threshold", 15, 3)], long=32),
-        dict(easy=[10, 8], rec=6, q=[("tempo", 25)], long=(24, 8, "race")),
-        dict(easy=[8, 7], rec=5, q=[("tempo", 20)], long=16),
-        dict(easy=[6], rec=4, q=[("tempo", 10)], long="race"),
-    ]
-    return generic_race_plan("marathon-intermediate-16w", "Marathon – Intermediate", "marathon", "intermediate", (5, 5),
-                             "For runners with a marathon or several halves behind them. Race-pace long runs and threshold work.",
-                             [("Base", 1, 4), ("Build", 5, 9), ("Peak", 10, 13), ("Taper", 14, 16)], 42195, s)
-
-
-def base_beginner():
-    s = [
-        dict(easy=[3, 3], long=4),
-        dict(easy=[3, 3.5], long=4.5),
-        dict(easy=[3.5, 3.5], long=5),
-        dict(easy=[3, 3], long=4),
-        dict(easy=[3.5, 4], long=5.5),
-        dict(easy=[4], strides=3.5, long=6),
-    ]
-    return generic_race_plan("base-building-beginner-6w", "Base Building – Beginner", "baseBuilding", "beginner", (3, 3),
-                             "Make running a habit. Easy, consistent mileage that builds durability without burnout.",
-                             [("Base", 1, 6)], 0, s)
-
-
-def base_intermediate():
-    s = [
-        dict(easy=[6, 5], strides=5, long=10),
-        dict(easy=[6, 6], strides=5, long=11),
-        dict(easy=[6, 6], q=[("fartlek", 8)], long=12),
-        dict(easy=[5, 5], strides=5, long=9),
-        dict(easy=[6], strides=5, q=[("progression", 7)], long=12),
-        dict(easy=[6], strides=5, q=[("hills", 8)], long=13),
-        dict(easy=[6.5], strides=5.5, q=[("fartlek", 10)], long=14),
-        dict(easy=[6, 5], strides=5, long=11),
-    ]
-    return generic_race_plan("base-building-intermediate-8w", "General Fitness – Intermediate", "baseBuilding", "intermediate", (4, 5),
-                             "Raise your aerobic engine between race blocks: mostly easy miles with light, playful speed.",
-                             [("Base", 1, 4), ("Build", 5, 8)], 0, s)
-
-
-PLANS = [couch_to_5k, five_k_beginner, five_k_intermediate, five_k_advanced,
-         ten_k_beginner, ten_k_intermediate, ten_k_advanced,
-         half_beginner, half_intermediate, half_advanced,
-         marathon_beginner, marathon_intermediate,
-         base_beginner, base_intermediate]
 
 # ---------------------------------------------------------------------------
 # Load report
@@ -576,8 +528,10 @@ def main():
     check_only = "--check" in sys.argv
     os.makedirs(OUT, exist_ok=True)
     failed = False
+    written = set()
     for fn in PLANS:
         p = fn()
+        written.add(f"{p['id']}.json")
         loads, easy_pct, problems = report(p)
         status = "OK " if not problems else "!! "
         print(f"{status}{p['id']:<36} {p['weeks']:>2}w  easy {easy_pct:4.0f}%  km/wk: "
@@ -589,6 +543,11 @@ def main():
             with open(os.path.join(OUT, f"{p['id']}.json"), "w") as f:
                 json.dump(p, f, indent=2, ensure_ascii=False)
                 f.write("\n")
+    if not check_only:
+        for name in os.listdir(OUT):
+            if name.startswith(ID_PREFIX) and name not in written:
+                os.remove(os.path.join(OUT, name))
+    print(f"{len(written)} plans")
     sys.exit(1 if failed else 0)
 
 

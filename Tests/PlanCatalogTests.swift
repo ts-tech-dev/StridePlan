@@ -67,4 +67,42 @@ final class PlanCatalogTests: XCTestCase {
             XCTAssertEqual(raceStep?.duration.value ?? 0, distance, accuracy: 0.5, plan.id)
         }
     }
+    func testEveryFamilyOffersSeveralLengths() {
+        let loader = PlanLoader(plans: TestSupport.loadPlans())
+        let current = loader.catalogPlans()
+        XCTAssertGreaterThanOrEqual(current.count, 40)
+        for goal in PlanGoal.allCases {
+            for level in PlanLevel.allCases where goal != .couchTo5K || level == .beginner {
+                let lengths = current.filter { $0.goal == goal && $0.level == level }.map(\.weeks).sorted()
+                let expected = goal == .marathon ? (level == .beginner ? [16, 18] : [12, 16, 18]) : [8, 10, 12]
+                XCTAssertEqual(lengths, expected, "\(goal) \(level)")
+            }
+        }
+        for plan in current {
+            XCTAssertEqual(loader.lengthOptions(for: plan).map(\.weeks), loader.lengthOptions(for: plan).map(\.weeks).sorted())
+            XCTAssertNotNil(plan.fitNote, plan.id)
+        }
+    }
+
+    func testRetiredPlansStayLoadableButHidden() {
+        let loader = PlanLoader(plans: TestSupport.loadPlans())
+        let retired = loader.allPlans().filter(\.isRetired)
+        XCTAssertTrue(retired.contains { $0.id == "couch-to-5k-beginner-9w" })
+        for plan in retired {
+            XCTAssertNotNil(loader.plan(id: plan.id))
+            XCTAssertFalse(loader.catalogPlans().contains(plan))
+            XCTAssertEqual(loader.lengthOptions(for: plan), [plan])
+        }
+    }
+
+    func testCouchTo5KStartsGently() {
+        let zones = PaceZones.effortOnly(level: .new)
+        for plan in TestSupport.loadPlans() where plan.goal == .couchTo5K && !plan.isRetired {
+            for workout in plan.schedule[0].workouts {
+                let running = workout.flatSteps.filter { $0.zone != .walk }.reduce(0) { $0 + $1.duration.value }
+                XCTAssertLessThanOrEqual(running, 4 * 60, "\(plan.id) week 1 running time")
+                XCTAssertLessThanOrEqual(workout.estimate(zones: zones).durationSeconds, 25 * 60, plan.id)
+            }
+        }
+    }
 }

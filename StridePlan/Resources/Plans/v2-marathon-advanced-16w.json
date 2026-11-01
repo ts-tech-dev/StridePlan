@@ -1,0 +1,2155 @@
+{
+  "id": "v2-marathon-advanced-16w",
+  "title": "Marathon – Advanced",
+  "goal": "marathon",
+  "level": "advanced",
+  "weeks": 16,
+  "runsPerWeek": {
+    "min": 5,
+    "max": 5
+  },
+  "description": "Big weeks, marathon-pace long runs and sustained threshold work for experienced marathoners.",
+  "phases": [
+    {
+      "name": "Base",
+      "weeks": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "Build",
+      "weeks": [
+        6,
+        13
+      ]
+    },
+    {
+      "name": "Taper",
+      "weeks": [
+        14,
+        16
+      ]
+    }
+  ],
+  "schedule": [
+    {
+      "week": 1,
+      "workouts": [
+        {
+          "id": "w1-easy-1",
+          "type": "easy",
+          "title": "Easy 10 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w1-strides",
+          "type": "easy",
+          "title": "Easy 9 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 9000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w1-recovery",
+          "type": "recovery",
+          "title": "Recovery 6 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w1-fartlek",
+          "type": "fartlek",
+          "title": "Fartlek 8 × 60 s",
+          "notes": "Speed play: surge, then settle. Don't chase exact paces — run by feel and enjoy the variety.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 8,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "tempo"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w1-long",
+          "type": "long",
+          "title": "Long Run 19 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 19000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "workouts": [
+        {
+          "id": "w2-easy-1",
+          "type": "easy",
+          "title": "Easy 10.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w2-strides",
+          "type": "easy",
+          "title": "Easy 9.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 9500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w2-recovery",
+          "type": "recovery",
+          "title": "Recovery 6 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w2-hills",
+          "type": "hills",
+          "title": "7 × 60 s Hills",
+          "notes": "Find a steady incline. Hill reps build strength and power with less impact than flat speed work. Effort hard, not all-out.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 900
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 7,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "interval",
+                  "note": "Drive the arms, tall posture"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "recovery",
+                  "note": "Jog back down"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w2-long",
+          "type": "long",
+          "title": "Long Run 20 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 20000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "workouts": [
+        {
+          "id": "w3-easy-1",
+          "type": "easy",
+          "title": "Easy 10.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w3-strides",
+          "type": "easy",
+          "title": "Easy 9.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 9500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w3-recovery",
+          "type": "recovery",
+          "title": "Recovery 6.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w3-progression",
+          "type": "progression",
+          "title": "Progression 7 km",
+          "notes": "Start easy and get gradually faster each third. A great way to practise finishing strong.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 2300.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 2300.0
+              },
+              "zone": "steady"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 2400.0
+              },
+              "zone": "tempo"
+            }
+          ]
+        },
+        {
+          "id": "w3-long",
+          "type": "long",
+          "title": "Long Run 21.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 21500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "workouts": [
+        {
+          "id": "w4-easy-1",
+          "type": "easy",
+          "title": "Easy 8 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w4-strides",
+          "type": "easy",
+          "title": "Easy 7 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w4-recovery",
+          "type": "recovery",
+          "title": "Recovery 5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w4-fartlek",
+          "type": "fartlek",
+          "title": "Fartlek 6 × 60 s",
+          "notes": "Speed play: surge, then settle. Don't chase exact paces — run by feel and enjoy the variety.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "tempo"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w4-long",
+          "type": "long",
+          "title": "Long Run 14.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 14500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "workouts": [
+        {
+          "id": "w5-easy-1",
+          "type": "easy",
+          "title": "Easy 11 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w5-strides",
+          "type": "easy",
+          "title": "Easy 10 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w5-recovery",
+          "type": "recovery",
+          "title": "Recovery 6.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w5-fartlek",
+          "type": "fartlek",
+          "title": "Fartlek 9 × 60 s",
+          "notes": "Speed play: surge, then settle. Don't chase exact paces — run by feel and enjoy the variety.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 9,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "tempo"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w5-long",
+          "type": "long",
+          "title": "Long Run 22.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 22500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "workouts": [
+        {
+          "id": "w6-easy-1",
+          "type": "easy",
+          "title": "Easy 11 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w6-strides",
+          "type": "easy",
+          "title": "Easy 10 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w6-recovery",
+          "type": "recovery",
+          "title": "Recovery 7 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w6-progression",
+          "type": "progression",
+          "title": "Progression 10 km",
+          "notes": "Start easy and get gradually faster each third. A great way to practise finishing strong.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 3300.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 3300.0
+              },
+              "zone": "steady"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 3400.0
+              },
+              "zone": "tempo"
+            }
+          ]
+        },
+        {
+          "id": "w6-long",
+          "type": "long",
+          "title": "Long Run 24 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 24000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "workouts": [
+        {
+          "id": "w7-easy-1",
+          "type": "easy",
+          "title": "Easy 11.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w7-strides",
+          "type": "easy",
+          "title": "Easy 10.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w7-recovery",
+          "type": "recovery",
+          "title": "Recovery 7 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w7-threshold",
+          "type": "tempo",
+          "title": "2 × 14 min Threshold",
+          "notes": "Threshold work at a hard-but-controlled effort. Even pacing matters more than speed — the last rep should feel like the first.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 2,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 840
+                  },
+                  "zone": "threshold"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "recovery"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w7-long",
+          "type": "long",
+          "title": "Long Run 25.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 25500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "workouts": [
+        {
+          "id": "w8-easy-1",
+          "type": "easy",
+          "title": "Easy 8.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w8-strides",
+          "type": "easy",
+          "title": "Easy 8 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w8-recovery",
+          "type": "recovery",
+          "title": "Recovery 5.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w8-fartlek",
+          "type": "fartlek",
+          "title": "Fartlek 6 × 60 s",
+          "notes": "Speed play: surge, then settle. Don't chase exact paces — run by feel and enjoy the variety.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "tempo"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w8-long",
+          "type": "long",
+          "title": "Long Run 17.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 17500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "workouts": [
+        {
+          "id": "w9-easy-1",
+          "type": "easy",
+          "title": "Easy 12 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 12000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w9-strides",
+          "type": "easy",
+          "title": "Easy 10.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w9-recovery",
+          "type": "recovery",
+          "title": "Recovery 7.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w9-tempo",
+          "type": "tempo",
+          "title": "Tempo 33 min",
+          "notes": "Comfortably hard: you could say a few words, but not hold a conversation. Tempo running raises the pace you can hold before fatigue builds up.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1980
+              },
+              "zone": "tempo"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w9-long",
+          "type": "long",
+          "title": "Long Run 27 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 27000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "workouts": [
+        {
+          "id": "w10-easy-1",
+          "type": "easy",
+          "title": "Easy 11.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w10-strides",
+          "type": "easy",
+          "title": "Easy 11 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w10-recovery",
+          "type": "recovery",
+          "title": "Recovery 7.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w10-threshold",
+          "type": "tempo",
+          "title": "3 × 18 min Threshold",
+          "notes": "Threshold work at a hard-but-controlled effort. Even pacing matters more than speed — the last rep should feel like the first.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 3,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 1080
+                  },
+                  "zone": "threshold"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "recovery"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w10-long",
+          "type": "long",
+          "title": "Long Run 28.5 km (7 fast finish)",
+          "isLongRun": true,
+          "notes": "Start relaxed and finish strong. Practising race-pace running on tired legs builds confidence and teaches pacing discipline.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 21500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7000.0
+              },
+              "zone": "race",
+              "note": "Finish at race effort"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "workouts": [
+        {
+          "id": "w11-easy-1",
+          "type": "easy",
+          "title": "Easy 12.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 12500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w11-strides",
+          "type": "easy",
+          "title": "Easy 11.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w11-recovery",
+          "type": "recovery",
+          "title": "Recovery 7.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 7500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w11-progression",
+          "type": "progression",
+          "title": "Progression 14.5 km",
+          "notes": "Start easy and get gradually faster each third. A great way to practise finishing strong.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 4800.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 4800.0
+              },
+              "zone": "steady"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 4900.0
+              },
+              "zone": "tempo"
+            }
+          ]
+        },
+        {
+          "id": "w11-long",
+          "type": "long",
+          "title": "Long Run 30 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 30000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "workouts": [
+        {
+          "id": "w12-easy-1",
+          "type": "easy",
+          "title": "Easy 9.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 9500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w12-strides",
+          "type": "easy",
+          "title": "Easy 8.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w12-recovery",
+          "type": "recovery",
+          "title": "Recovery 6 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w12-fartlek",
+          "type": "fartlek",
+          "title": "Fartlek 6 × 60 s",
+          "notes": "Speed play: surge, then settle. Don't chase exact paces — run by feel and enjoy the variety.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "tempo"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w12-long",
+          "type": "long",
+          "title": "Long Run 20.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 20500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 13,
+      "workouts": [
+        {
+          "id": "w13-easy-1",
+          "type": "easy",
+          "title": "Easy 13 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 13000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w13-strides",
+          "type": "easy",
+          "title": "Easy 11.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w13-recovery",
+          "type": "recovery",
+          "title": "Recovery 8 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w13-tempo",
+          "type": "tempo",
+          "title": "Tempo 50 min",
+          "notes": "Comfortably hard: you could say a few words, but not hold a conversation. Tempo running raises the pace you can hold before fatigue builds up.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 3000
+              },
+              "zone": "tempo"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w13-long",
+          "type": "long",
+          "title": "Long Run 32 km (8 fast finish)",
+          "isLongRun": true,
+          "notes": "Start relaxed and finish strong. Practising race-pace running on tired legs builds confidence and teaches pacing discipline.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 24000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 8000.0
+              },
+              "zone": "race",
+              "note": "Finish at race effort"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 14,
+      "workouts": [
+        {
+          "id": "w14-easy-1",
+          "type": "easy",
+          "title": "Easy 11.5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 11500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w14-strides",
+          "type": "easy",
+          "title": "Easy 10.5 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10500.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w14-recovery",
+          "type": "recovery",
+          "title": "Recovery 6.5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 6500.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w14-tempo",
+          "type": "tempo",
+          "title": "Tempo 20 min",
+          "notes": "Comfortably hard: you could say a few words, but not hold a conversation. Tempo running raises the pace you can hold before fatigue builds up.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1200
+              },
+              "zone": "tempo"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w14-long",
+          "type": "long",
+          "title": "Long Run 25.5 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 25500.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 15,
+      "workouts": [
+        {
+          "id": "w15-easy-1",
+          "type": "easy",
+          "title": "Easy 10 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 10000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w15-strides",
+          "type": "easy",
+          "title": "Easy 9 km + strides",
+          "notes": "Easy running finished with relaxed strides to keep your legs quick and your form tidy.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 9000.0
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 20
+                  },
+                  "zone": "repetition",
+                  "note": "Smooth, quick stride — not a sprint"
+                },
+                {
+                  "kind": "recover",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "walk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "w15-recovery",
+          "type": "recovery",
+          "title": "Recovery 5 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5000.0
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w15-tempo",
+          "type": "tempo",
+          "title": "Tempo 20 min",
+          "notes": "Comfortably hard: you could say a few words, but not hold a conversation. Tempo running raises the pace you can hold before fatigue builds up.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1200
+              },
+              "zone": "tempo"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w15-long",
+          "type": "long",
+          "title": "Long Run 21 km",
+          "isLongRun": true,
+          "notes": "The cornerstone of your week. Keep it easy, fuel and hydrate as you would on race day, and focus on time on your feet.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 21000.0
+              },
+              "zone": "easy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 16,
+      "workouts": [
+        {
+          "id": "w16-easy-1",
+          "type": "easy",
+          "title": "Easy 5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5000
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w16-easy-2",
+          "type": "easy",
+          "title": "Easy 5 km",
+          "notes": "Conversational pace — you should be able to speak in full sentences.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5000
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w16-recovery",
+          "type": "recovery",
+          "title": "Recovery 4 km",
+          "notes": "Keep this genuinely slow. The goal is blood flow, not fitness — slower than you think.",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 4000
+              },
+              "zone": "recovery"
+            }
+          ]
+        },
+        {
+          "id": "w16-tempo",
+          "type": "tempo",
+          "title": "Tempo 10 min",
+          "notes": "Comfortably hard: you could say a few words, but not hold a conversation. Tempo running raises the pace you can hold before fatigue builds up.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "tempo"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 600
+              },
+              "zone": "easy"
+            }
+          ]
+        },
+        {
+          "id": "w16-race",
+          "type": "race",
+          "title": "Race Day: Marathon",
+          "notes": "This is what you trained for. Start controlled, settle into goal pace, and save something for the last part. Enjoy your Marathon!",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "easy",
+              "note": "Walk and jog lightly"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 42195
+              },
+              "zone": "race"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fitNote": "Suits runners already doing about 51 km (32 mi) a week."
+}

@@ -5,6 +5,18 @@ protocol PlanProviding {
     func plan(id: String) -> PlanTemplate?
 }
 
+extension PlanProviding {
+    /// Plans offered to new runners (retired plans excluded).
+    func catalogPlans() -> [PlanTemplate] { allPlans().filter { !$0.isRetired } }
+
+    /// The lengths a plan comes in (same goal and level), shortest first. A retired plan only offers itself.
+    func lengthOptions(for plan: PlanTemplate) -> [PlanTemplate] {
+        guard !plan.isRetired else { return [plan] }
+        let options = catalogPlans().filter { $0.goal == plan.goal && $0.level == plan.level }
+        return options.isEmpty ? [plan] : options.sorted { $0.weeks < $1.weeks }
+    }
+}
+
 /// Loads plan templates from bundled `*.json` files. Drop a new file into `Resources/Plans` to add a plan.
 final class PlanLoader: PlanProviding {
     enum LoadError: Error, CustomStringConvertible {

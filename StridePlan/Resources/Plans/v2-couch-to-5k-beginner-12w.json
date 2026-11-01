@@ -1,0 +1,1675 @@
+{
+  "id": "v2-couch-to-5k-beginner-12w",
+  "title": "Couch to 5K",
+  "goal": "couchTo5K",
+  "level": "beginner",
+  "weeks": 12,
+  "runsPerWeek": {
+    "min": 3,
+    "max": 3
+  },
+  "description": "From your first steps to running 5K. Sessions start at about 20 minutes with 30-second jogs and grow a little each week. Repeat any week that feels hard.",
+  "phases": [
+    {
+      "name": "Foundation",
+      "weeks": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "Build",
+      "weeks": [
+        5,
+        9
+      ]
+    },
+    {
+      "name": "Finish",
+      "weeks": [
+        10,
+        12
+      ]
+    }
+  ],
+  "schedule": [
+    {
+      "week": 1,
+      "workouts": [
+        {
+          "id": "w1-run-1",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w1-run-2",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w1-run-3",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "workouts": [
+        {
+          "id": "w2-run-1",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 8",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 8,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w2-run-2",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 8",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 8,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w2-run-3",
+          "type": "easy",
+          "title": "Run 30 s / Walk 90 s × 8",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 8,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 30
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "workouts": [
+        {
+          "id": "w3-run-1",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w3-run-2",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w3-run-3",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "workouts": [
+        {
+          "id": "w4-run-1",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 7",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 7,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w4-run-2",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 7",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 7,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w4-run-3",
+          "type": "easy",
+          "title": "Run 1 min / Walk 90 s × 8",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 8,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 60
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "workouts": [
+        {
+          "id": "w5-run-1",
+          "type": "easy",
+          "title": "Run 90 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w5-run-2",
+          "type": "easy",
+          "title": "Run 90 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w5-run-3",
+          "type": "easy",
+          "title": "Run 90 s / Walk 90 s × 6",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 6,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "workouts": [
+        {
+          "id": "w6-run-1",
+          "type": "easy",
+          "title": "Run 2 min / Walk 90 s × 5",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 5,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w6-run-2",
+          "type": "easy",
+          "title": "Run 2 min / Walk 90 s × 5",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 5,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w6-run-3",
+          "type": "easy",
+          "title": "Run 2 min / Walk 90 s × 5",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 5,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "workouts": [
+        {
+          "id": "w7-run-1",
+          "type": "easy",
+          "title": "Run 3 min / Walk 90 s × 4",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 4,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 180
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w7-run-2",
+          "type": "easy",
+          "title": "Run 3 min / Walk 90 s × 4",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 4,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 180
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w7-run-3",
+          "type": "easy",
+          "title": "Run 3 min / Walk 90 s × 4",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 4,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 180
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "workouts": [
+        {
+          "id": "w8-run-1",
+          "type": "easy",
+          "title": "Run 4 min / Walk 90 s × 4",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 4,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 240
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w8-run-2",
+          "type": "easy",
+          "title": "Run 4 min / Walk 90 s × 4",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 4,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 240
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w8-run-3",
+          "type": "easy",
+          "title": "Run 5 min / Walk 2 min × 3",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 3,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 300
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "workouts": [
+        {
+          "id": "w9-run-1",
+          "type": "easy",
+          "title": "Run 5 min / Walk 90 s × 3",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 3,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 300
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w9-run-2",
+          "type": "easy",
+          "title": "Run 5 min / Walk 90 s × 3",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 3,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 300
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 90
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w9-run-3",
+          "type": "easy",
+          "title": "Run 8 min / Walk 2 min × 2",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 2,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 480
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "workouts": [
+        {
+          "id": "w10-run-1",
+          "type": "easy",
+          "title": "Run 10 min / Walk 2 min × 2",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 2,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 600
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w10-run-2",
+          "type": "easy",
+          "title": "Run 10 min / Walk 2 min × 2",
+          "notes": "Run at a gentle, conversational jog and walk briskly in between. Finishing every interval matters far more than speed.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "repeat",
+              "count": 2,
+              "steps": [
+                {
+                  "kind": "run",
+                  "duration": {
+                    "type": "time",
+                    "value": 600
+                  },
+                  "zone": "easy"
+                },
+                {
+                  "kind": "walk",
+                  "duration": {
+                    "type": "time",
+                    "value": 120
+                  },
+                  "zone": "walk"
+                }
+              ]
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 180
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w10-run-3",
+          "type": "easy",
+          "title": "Run 15 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 900
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "workouts": [
+        {
+          "id": "w11-run-1",
+          "type": "easy",
+          "title": "Run 20 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1200
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w11-run-2",
+          "type": "easy",
+          "title": "Run 22 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1320
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w11-run-3",
+          "type": "easy",
+          "title": "Run 25 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1500
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "workouts": [
+        {
+          "id": "w12-run-1",
+          "type": "easy",
+          "title": "Run 20 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 1200
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w12-run-2",
+          "type": "easy",
+          "title": "Run 15 min",
+          "notes": "One continuous easy run. Slow down as much as you need to keep going — walking breaks are fine.",
+          "steps": [
+            {
+              "kind": "warmup",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk",
+              "note": "Brisk walk to warm up"
+            },
+            {
+              "kind": "run",
+              "duration": {
+                "type": "time",
+                "value": 900
+              },
+              "zone": "easy"
+            },
+            {
+              "kind": "cooldown",
+              "duration": {
+                "type": "time",
+                "value": 300
+              },
+              "zone": "walk"
+            }
+          ]
+        },
+        {
+          "id": "w12-5k",
+          "type": "race",
+          "title": "Your First 5K",
+          "notes": "Run at an easy, comfortable effort. Short walk breaks are completely fine: finishing is the goal. You've earned this!",
+          "steps": [
+            {
+              "kind": "run",
+              "duration": {
+                "type": "distance",
+                "value": 5000
+              },
+              "zone": "race"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fitNote": "The gentlest build: ideal if you're new to exercise or returning after a long break."
+}

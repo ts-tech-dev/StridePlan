@@ -99,8 +99,14 @@ struct PlanTemplate: Codable, Identifiable, Hashable {
     var weeks: Int
     var runsPerWeek: CountRange
     var description: String
+    /// Who this particular length suits, e.g. "Suits runners already doing about 12 km (7 mi) a week."
+    var fitNote: String?
+    /// Superseded plans stay loadable for runners already on them but are hidden from the catalog.
+    var retired: Bool?
     var phases: [PlanPhase]
     var schedule: [PlanWeek]
+
+    var isRetired: Bool { retired ?? false }
 
     func week(_ number: Int) -> PlanWeek? {
         schedule.first { $0.week == number }

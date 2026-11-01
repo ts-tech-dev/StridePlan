@@ -22,29 +22,42 @@ struct CatalogView: View {
     @State private var filter = CatalogFilter()
     @State private var showingFilters = false
 
-    private var plans: [PlanTemplate] { services.plans.allPlans().filter(filter.matches) }
+    /// One entry per goal + level, holding the lengths that match the filters (shortest first).
+    private var families: [[PlanTemplate]] {
+        let groups = Dictionary(grouping: services.plans.catalogPlans()) { "\($0.goal.rawValue)|\($0.level.rawValue)" }
+        return groups.values
+            .map { $0.filter(filter.matches).sorted { $0.weeks < $1.weeks } }
+            .filter { !$0.isEmpty }
+            .sorted { a, b in
+                let ga = PlanGoal.allCases.firstIndex(of: a[0].goal) ?? 0
+                let gb = PlanGoal.allCases.firstIndex(of: b[0].goal) ?? 0
+                return ga != gb ? ga < gb : a[0].level < b[0].level
+            }
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     goalChips
-                    if plans.isEmpty {
+                    if families.isEmpty {
                         EmptyStateView(symbol: "line.3.horizontal.decrease.circle", title: "No matching plans",
                                        message: "Try widening your filters.", actionTitle: "Reset filters") {
                             filter = CatalogFilter()
                         }
                     }
                     ForEach(PlanGoal.allCases) { goal in
-                        let group = plans.filter { $0.goal == goal }
+                        let group = families.filter { $0[0].goal == goal }
                         if !group.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
                                 Label(goal.displayName, systemImage: goal.symbolName)
                                     .font(.title3.bold())
                                     .accessibilityAddTraits(.isHeader)
-                                ForEach(group) { plan in
+                                ForEach(group, id: \.[0].id) { variants in
+                                    let plan = variants[variants.count / 2]
                                     NavigationLink(value: plan) {
-                                        PlanCard(plan: plan, recommended: plan.level == profile.level.suggestedPlanLevel)
+                                        PlanCard(plan: plan, lengths: variants.map(\.weeks),
+                                                 recommended: plan.level == profile.level.suggestedPlanLevel)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -101,7 +114,12 @@ struct CatalogView: View {
 
 struct PlanCard: View {
     let plan: PlanTemplate
+    var lengths: [Int] = []
     var recommended = false
+
+    private var lengthText: String {
+        lengths.count > 1 ? lengths.map(String.init).joined(separator: " · ") + " wks" : "\(plan.weeks) wks"
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -120,7 +138,7 @@ struct PlanCard: View {
                     .accessibilityHidden(true)
             }
             HStack(spacing: 12) {
-                Label("\(plan.weeks) wks", systemImage: "calendar")
+                Label(lengthText, systemImage: "calendar")
                 Label("\(plan.runsPerWeek.displayText)/wk", systemImage: "figure.run")
                 Text(plan.level.displayName)
                     .padding(.horizontal, 8).padding(.vertical, 2)

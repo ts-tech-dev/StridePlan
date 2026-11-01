@@ -32,7 +32,7 @@ enum PreviewData {
     }
 
     static var template: PlanTemplate {
-        AppServices.preview.plans.plan(id: "half-marathon-intermediate-12w") ?? AppServices.preview.plans.allPlans()[0]
+        AppServices.preview.plans.plan(id: "v2-half-marathon-intermediate-12w") ?? AppServices.preview.plans.allPlans()[0]
     }
 
     static var intervalWorkout: WorkoutTemplate {

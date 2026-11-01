@@ -3,10 +3,19 @@ import SwiftData
 import SwiftUI
 
 struct PlanDetailView: View {
-    let plan: PlanTemplate
     let profile: UserProfile
+    @Environment(\.services) private var services
+    /// The selected length; the picker swaps between plans of the same goal and level.
+    @State private var plan: PlanTemplate
     @Query(filter: #Predicate<ActivePlan> { $0.statusRaw == "active" }) private var activePlans: [ActivePlan]
     @State private var showingSetup = false
+
+    init(plan: PlanTemplate, profile: UserProfile) {
+        self.profile = profile
+        _plan = State(initialValue: plan)
+    }
+
+    private var lengthOptions: [PlanTemplate] { services.plans.lengthOptions(for: plan) }
 
     private var zones: PaceZones { profile.paceZones }
     private var units: UnitSystem { profile.units }
@@ -71,6 +80,20 @@ struct PlanDetailView: View {
                 .foregroundStyle(Theme.accent)
             Text(plan.title).font(.largeTitle.bold())
             Text(plan.description).foregroundStyle(.secondary)
+            if lengthOptions.count > 1 {
+                Picker("Plan length", selection: $plan.animation(.snappy)) {
+                    ForEach(lengthOptions) { option in
+                        Text("\(option.weeks) weeks").tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.top, 4)
+            }
+            if let note = plan.fitNote {
+                Label(note, systemImage: "person.fill.checkmark")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
