@@ -8,6 +8,7 @@ final class AppServices {
     let notifications: NotificationScheduling
     let liveActivity: RunActivityControlling
     let haptics: HapticsProviding
+    let garmin: GarminConnecting
     private let gpsLocation: LocationProviding
     private let makeSimulatedLocation: () -> LocationProviding
 
@@ -19,7 +20,8 @@ final class AppServices {
         voice: VoiceCoaching,
         notifications: NotificationScheduling,
         liveActivity: RunActivityControlling,
-        haptics: HapticsProviding
+        haptics: HapticsProviding,
+        garmin: GarminConnecting
     ) {
         self.plans = plans
         self.gpsLocation = location
@@ -29,6 +31,7 @@ final class AppServices {
         self.notifications = notifications
         self.liveActivity = liveActivity
         self.haptics = haptics
+        self.garmin = garmin
     }
 
     /// Real GPS, or a GPX replay when the user enables "Simulate GPS" (always on in the Simulator).
@@ -50,7 +53,8 @@ final class AppServices {
             voice: VoiceCoachService(),
             notifications: NotificationService(),
             liveActivity: LiveActivityService(),
-            haptics: Haptics()
+            haptics: Haptics(),
+            garmin: GarminService()
         )
     }
 
@@ -62,7 +66,8 @@ final class AppServices {
         voice: MockVoiceCoach(),
         notifications: MockNotificationService(),
         liveActivity: MockLiveActivityService(),
-        haptics: SilentHaptics()
+        haptics: SilentHaptics(),
+        garmin: MockGarminService()
     )
 }
 

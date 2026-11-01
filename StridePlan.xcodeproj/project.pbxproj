@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6F5E19A22C3BE76F8CD02C8D /* StridePlanLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DFC21434123F2D64B8A08AFD /* StridePlanLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EB4044DCB467CF1D88AEA500 /* ConnectIQ in Frameworks */ = {isa = PBXBuildFile; productRef = CEE910702C63D8C715A37FC0 /* ConnectIQ */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB4044DCB467CF1D88AEA500 /* ConnectIQ in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +157,7 @@
 			);
 			name = StridePlan;
 			packageProductDependencies = (
+				CEE910702C63D8C715A37FC0 /* ConnectIQ */,
 			);
 			productName = StridePlan;
 			productReference = 4EE10481494F7874AA365F8D /* StridePlan.app */;
@@ -237,6 +240,9 @@
 			);
 			mainGroup = 8D3FC6DB5D0827F168A73277;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B70684DE40880EED494EFAFD /* XCRemoteSwiftPackageReference "connectiq-companion-app-sdk-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1BADDC1D73C1A20F347483E1 /* Products */;
 			projectDirPath = "";
@@ -616,6 +622,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B70684DE40880EED494EFAFD /* XCRemoteSwiftPackageReference "connectiq-companion-app-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/garmin/connectiq-companion-app-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CEE910702C63D8C715A37FC0 /* ConnectIQ */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B70684DE40880EED494EFAFD /* XCRemoteSwiftPackageReference "connectiq-companion-app-sdk-ios" */;
+			productName = ConnectIQ;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
 }

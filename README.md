@@ -13,7 +13,7 @@ A native iPhone running-plan app in Swift and SwiftUI. You browse training plans
 | Xcode | 16.0 or later (the project uses synchronized folders, object version 77) |
 | iOS | 17.0+, iPhone only, portrait |
 | Swift | 5.10+ (language mode 5) |
-| Dependencies | None. Only Apple frameworks |
+| Dependencies | Garmin's [Connect IQ iOS SDK](https://github.com/garmin/connectiq-companion-app-sdk-ios) (Swift package, resolved by Xcode) |
 
 ## Getting started
 
@@ -41,7 +41,7 @@ These are already set up in the project. Here is what each target uses, in case 
 
 | Capability | Where |
 |---|---|
-| Background Modes → *Location updates*, *Audio* | `UIBackgroundModes` in `Config/StridePlan-Info.plist` |
+| Background Modes → *Location updates*, *Audio*, *Uses Bluetooth LE accessories* | `UIBackgroundModes` in `Config/StridePlan-Info.plist` |
 | HealthKit | `Config/StridePlan.entitlements` (`com.apple.developer.healthkit`) |
 | Live Activities | `NSSupportsLiveActivities = YES` in the Info.plist |
 
@@ -52,6 +52,9 @@ Usage strings in `Config/StridePlan-Info.plist`:
 | `NSLocationWhenInUseUsageDescription` | GPS distance, pace and route during runs |
 | `NSHealthShareUsageDescription` | Read heart rate for run summaries |
 | `NSHealthUpdateUsageDescription` | Save runs as workouts with routes |
+| `NSBluetoothAlwaysUsageDescription` | Talk to a Garmin watch (Connect IQ SDK) |
+
+For Garmin, the Info.plist also registers the `strideplan-ciq` URL scheme, which Garmin Connect uses to return the chosen watch, and lists `gcm-ciq` under `LSApplicationQueriesSchemes`.
 
 Xcode merges the remaining keys (display name, launch screen, portrait-only) from the `INFOPLIST_KEY_*` build settings.
 
@@ -82,7 +85,8 @@ StridePlan/                 App target (synchronized folder)
     Settings/               Units, voice, reminders, zones, HealthKit, plan management, export
   Services/                 PlanLoader, PaceCalculator, ScheduleGenerator, WorkoutEngine, RunMetricsTracker,
                             LocationService (+ GPX replay), HealthKitService, VoiceCoachService,
-                            NotificationService, LiveActivityService, PlanManager, DataExporter, Haptics
+                            NotificationService, LiveActivityService, PlanManager, DataExporter, Haptics,
+                            GarminService / GarminSync / GarminProtocol (watch connection)
   Models/                   Plan template structs (Codable), pace zones, SwiftData models
   DesignSystem/             Theme, zone colors, reusable components
   Preview/                  In-memory SwiftData seed for SwiftUI previews
@@ -91,6 +95,7 @@ StridePlan/                 App target (synchronized folder)
 Shared/                     Compiled into both app and widget (ActivityAttributes, brand + zone palette)
 LiveActivity/               Widget extension (Lock Screen + Dynamic Island)
 Tests/                      XCTest unit tests (hosted by the app)
+Garmin/                     Connect IQ watch app (Monkey C). See Garmin/README.md
 Config/                     Info.plists, entitlements, Shared.xcconfig
 scripts/                    Plan generator/validator, project generator, icon + GPX generators
 ```
@@ -193,6 +198,10 @@ Every screen has a `#Preview` that uses `PreviewData`: an in-memory store seeded
 3. Optionally rename the targets/folders and rerun `python3 scripts/generate_xcodeproj.py` after updating its constants.
 4. Update the usage strings in `Config/StridePlan-Info.plist`, which mention the name.
 
+## Garmin watches
+
+StridePlan has a companion Connect IQ app in `Garmin/`. Connect a watch in **Settings → Garmin** (this goes through the Garmin Connect app). Then open StridePlan on the watch, or tap **Send to Garmin** on a workout. The watch gets the next 7 days of runs with your pace targets and guides you through each step. It records a normal Garmin activity and sends the run back, where it lands in History and completes the scheduled workout. Garmin runs aren't saved to Apple Health again, because Garmin Connect already does that. See [Garmin/README.md](Garmin/README.md) for building, installing and the message format.
+
 ## Data export
 
 **Settings → Your data → Export** writes a pretty-printed JSON file with your profile, pace zones, plans, scheduled workouts and every run (splits, step results and route), then offers it through the share sheet.
@@ -208,5 +217,6 @@ Every screen has a `#Preview` that uses `PreviewData`: an in-memory store seeded
 |---|---|
 | `scripts/generate_plans.py` | Writes and validates the plan JSON files |
 | `scripts/generate_xcodeproj.py` | Regenerates `StridePlan.xcodeproj` (deterministic IDs) |
+| `scripts/build_watch.sh` | Builds the Garmin watch app (`.prg` for one device, or the store `.iq`) |
 | `scripts/make_icon.py` | Placeholder 1024 px app icon (needs Pillow) |
 | `scripts/make_sample_gpx.py` | Sample GPX route used for GPS replay |

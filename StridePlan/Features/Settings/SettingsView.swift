@@ -11,6 +11,8 @@ struct SettingsView: View {
     @State private var confirmingRestart = false
     @State private var exportURL: URL?
     @State private var exportError: String?
+    @State private var garminNote: String?
+    @State private var isSendingToWatch = false
 
     private var plan: ActivePlan? { activePlans.first }
     private var template: PlanTemplate? { plan.flatMap { services.plans.plan(id: $0.planID) } }
@@ -23,6 +25,7 @@ struct SettingsView: View {
                 voiceSection
                 remindersSection
                 healthSection
+                garminSection
                 planSection
                 dataSection
                 developerSection
@@ -135,6 +138,82 @@ struct SettingsView: View {
             Text("Apple Health")
         } footer: {
             Text("Completed runs are saved as running workouts with their route. Heart rate is read to show averages in summaries.")
+        }
+    }
+
+    private var garmin: GarminConnecting { services.garmin }
+
+    private var garminSection: some View {
+        Section {
+            if let name = garmin.status.watchName {
+                LabeledContent("Watch", value: name)
+                LabeledContent("Status") {
+                    Label(garminStatusText, systemImage: "circle.fill")
+                        .labelStyle(.titleAndIcon)
+                        .imageScale(.small)
+                        .foregroundStyle(garmin.status.isReady ? .green : .secondary)
+                }
+                if case .connected(_, false) = garmin.status {
+                    Button {
+                        garmin.showWatchAppInStore()
+                    } label: {
+                        Label("Install \(AppBrand.name) on the watch", systemImage: "arrow.down.circle")
+                    }
+                }
+                Button {
+                    sendWorkoutsToWatch()
+                } label: {
+                    if isSendingToWatch {
+                        ProgressView()
+                    } else {
+                        Label("Send upcoming workouts", systemImage: "arrow.up.forward.app")
+                    }
+                }
+                .disabled(!garmin.status.isReady || isSendingToWatch)
+                if let garminNote {
+                    Text(garminNote).font(.footnote).foregroundStyle(.secondary)
+                }
+                Button("Choose a different watch") { garmin.pairWatch() }
+                Button("Disconnect watch", role: .destructive) {
+                    garmin.forgetWatch()
+                    garminNote = nil
+                }
+            } else {
+                Button {
+                    garmin.pairWatch()
+                } label: {
+                    Label("Connect a Garmin watch", systemImage: "applewatch.radiowaves.left.and.right")
+                }
+            }
+        } header: {
+            Text("Garmin")
+        } footer: {
+            Text("Connects through the Garmin Connect app. Open \(AppBrand.name) on your watch to get the next \(GarminSync.daysAhead) days of workouts. Runs you record there are saved to Garmin Connect and appear in History here.")
+        }
+    }
+
+    private var garminStatusText: String {
+        switch garmin.status {
+        case .noWatch: "Not connected"
+        case .bluetoothOff: "Bluetooth is off"
+        case .disconnected: "Not in range"
+        case .connected(_, nil): "Connected"
+        case .connected(_, true?): "Connected · app installed"
+        case .connected(_, false?): "Connected · app not installed"
+        }
+    }
+
+    private func sendWorkoutsToWatch() {
+        isSendingToWatch = true
+        garminNote = nil
+        Task {
+            do {
+                try await GarminSync.sendUpcoming(profile: profile, services: services, context: context)
+                garminNote = "Sent. Open \(AppBrand.name) on your watch to see them."
+            } catch {
+                garminNote = error.localizedDescription
+            }
+            isSendingToWatch = false
         }
     }
 

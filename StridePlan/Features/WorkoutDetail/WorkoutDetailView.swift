@@ -7,6 +7,10 @@ struct WorkoutDetailView: View {
     let template: PlanTemplate?
     let profile: UserProfile
     @Environment(RunLauncher.self) private var launcher
+    @Environment(\.services) private var services
+    @Environment(\.modelContext) private var context
+    @State private var watchNote: String?
+    @State private var isSendingToWatch = false
 
     init(scheduled: ScheduledWorkout, plan: ActivePlan, template: PlanTemplate, profile: UserProfile) {
         self.scheduled = scheduled
@@ -90,15 +94,50 @@ struct WorkoutDetailView: View {
                         Label("Start guided run", systemImage: "play.fill")
                     }
                     .buttonStyle(.primary)
-                    Button("Log manually (treadmill / no GPS)") {
-                        launcher.logManually(workout, scheduled: scheduled)
+                    HStack(spacing: 20) {
+                        if let scheduled, services.garmin.status.watchName != nil {
+                            Button {
+                                sendToWatch(scheduled)
+                            } label: {
+                                if isSendingToWatch {
+                                    ProgressView()
+                                } else {
+                                    Label("Send to Garmin", systemImage: "applewatch.radiowaves.left.and.right")
+                                }
+                            }
+                            .disabled(!services.garmin.status.isReady || isSendingToWatch)
+                        }
+                        Button("Log manually (treadmill / no GPS)") {
+                            launcher.logManually(workout, scheduled: scheduled)
+                        }
                     }
                     .font(.subheadline)
                     .frame(minHeight: 36)
+                    if let watchNote {
+                        Text(watchNote)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
                 .padding()
                 .background(.bar)
             }
+        }
+    }
+
+    private func sendToWatch(_ scheduled: ScheduledWorkout) {
+        isSendingToWatch = true
+        watchNote = nil
+        Task {
+            do {
+                try await GarminSync.sendUpcoming(profile: profile, services: services, context: context, including: scheduled)
+                services.garmin.promptToOpenWatchApp()
+                watchNote = "Sent. Open \(AppBrand.name) on your watch and pick \"\(workout.title)\"."
+            } catch {
+                watchNote = error.localizedDescription
+            }
+            isSendingToWatch = false
         }
     }
 

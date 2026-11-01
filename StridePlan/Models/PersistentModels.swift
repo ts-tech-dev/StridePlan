@@ -194,6 +194,8 @@ final class RunRecord {
     var healthKitUUID: UUID?
     var isManual: Bool
     var averageHeartRate: Double?
+    /// Set for runs recorded on a Garmin watch; used to skip re-imports.
+    var garminActivityID: String?
 
     @Relationship(inverse: \ScheduledWorkout.run)
     var scheduledWorkout: ScheduledWorkout?
@@ -212,6 +214,8 @@ final class RunRecord {
     }
 
     var workoutType: WorkoutType { WorkoutType(rawValue: workoutTypeRaw) ?? .easy }
+
+    var isFromGarmin: Bool { garminActivityID != nil }
 
     var averagePaceSecondsPerKm: Double? {
         distanceMeters > 50 ? durationSeconds / distanceMeters * 1000 : nil

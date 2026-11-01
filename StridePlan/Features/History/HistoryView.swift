@@ -164,6 +164,10 @@ private struct RunRow: View {
                 Image(systemName: "square.and.pencil")
                     .foregroundStyle(.secondary)
                     .accessibilityLabel("Logged manually")
+            } else if run.isFromGarmin {
+                Image(systemName: "applewatch.side.right")
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel("Recorded on Garmin")
             }
         }
         .accessibilityElement(children: .combine)

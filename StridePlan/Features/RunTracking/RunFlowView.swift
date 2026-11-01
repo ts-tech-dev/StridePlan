@@ -107,8 +107,9 @@ enum RunRecorder {
     }
 
     /// Saves to Apple Health (if enabled) and pulls average heart rate for the run window.
+    /// Garmin runs are skipped: Garmin Connect writes those to Apple Health itself.
     static func syncHealth(run: RunRecord, profile: UserProfile, health: HealthServicing, context: ModelContext) {
-        guard profile.healthKitEnabled, health.isAvailable, run.healthKitUUID == nil else { return }
+        guard profile.healthKitEnabled, health.isAvailable, run.healthKitUUID == nil, !run.isFromGarmin else { return }
         let input = HealthRunInput(start: run.startDate, end: run.endDate, distanceMeters: run.distanceMeters,
                                    isIndoor: run.isManual || run.route.isEmpty,
                                    route: run.route.map(\.clLocation), title: run.workoutTitle)

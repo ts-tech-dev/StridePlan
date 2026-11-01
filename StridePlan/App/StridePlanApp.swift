@@ -36,6 +36,10 @@ struct StridePlanApp: App {
             .environment(\.services, services)
             .environment(launcher)
             .tint(Theme.accent)
+            .onOpenURL { url in
+                // Garmin Connect returns here after the user picks a watch.
+                services.garmin.handleOpenURL(url)
+            }
     }
 }
 

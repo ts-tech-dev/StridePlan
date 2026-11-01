@@ -12,3 +12,7 @@ xcuserdata/
 .DS_Store
 # Python
 __pycache__/
+# Connect IQ
+Garmin/build/
+*.der
+*.pem

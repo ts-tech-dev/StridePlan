@@ -10,6 +10,9 @@ Targets
   StridePlan               iOS app            ← StridePlan/ + Shared/
   StridePlanLiveActivity   Widget extension   ← LiveActivity/ + Shared/
   StridePlanTests          Unit tests         ← Tests/ (hosted by the app)
+
+Swift packages
+  ConnectIQ (garmin/connectiq-companion-app-sdk-ios)  linked into the app for the Garmin watch connection
 """
 import hashlib
 import os
@@ -32,7 +35,7 @@ ids = {k: oid(k) for k in [
     "app.sources", "app.frameworks", "app.resources", "app.embed",
     "ext.sources", "ext.frameworks", "ext.resources",
     "tests.sources", "tests.frameworks", "tests.resources",
-    "bf.embedExt",
+    "bf.embedExt", "bf.connectIQ", "pkg.connectIQ", "prod.connectIQ",
     "proxy.ext", "proxy.app", "dep.ext", "dep.app",
     "cfgList.project", "cfgList.app", "cfgList.ext", "cfgList.tests",
     "cfg.project.Debug", "cfg.project.Release",
@@ -187,8 +190,13 @@ def phase(key, isa, name, files=""):
             f"\t\t\tfiles = (\n{files}\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t}};\n")
 
 
-def target(key, name, product_ref, product_name, product_type, cfg_list, phases, groups, deps=()):
+CONNECTIQ_URL = "https://github.com/garmin/connectiq-companion-app-sdk-ios"
+CONNECTIQ_MIN_VERSION = "1.8.0"
+
+
+def target(key, name, product_ref, product_name, product_type, cfg_list, phases, groups, deps=(), packages=()):
     phase_lines = "".join(f"\t\t\t\t{ids[p]} /* {n} */,\n" for p, n in phases)
+    package_lines = "".join(f"\t\t\t\t{ids[k]} /* {n} */,\n" for k, n in packages)
     group_lines = "".join(f"\t\t\t\t{ids[g]} /* {n} */,\n" for g, n in groups)
     dep_lines = "".join(f"\t\t\t\t{ids[d]} /* PBXTargetDependency */,\n" for d in deps)
     return (f"\t\t{ids[key]} /* {name} */ = {{\n\t\t\tisa = PBXNativeTarget;\n"
@@ -196,7 +204,7 @@ def target(key, name, product_ref, product_name, product_type, cfg_list, phases,
             f"\t\t\tbuildPhases = (\n{phase_lines}\t\t\t);\n\t\t\tbuildRules = (\n\t\t\t);\n"
             f"\t\t\tdependencies = (\n{dep_lines}\t\t\t);\n"
             f"\t\t\tfileSystemSynchronizedGroups = (\n{group_lines}\t\t\t);\n"
-            f"\t\t\tname = {name};\n\t\t\tpackageProductDependencies = (\n\t\t\t);\n"
+            f"\t\t\tname = {name};\n\t\t\tpackageProductDependencies = (\n{package_lines}\t\t\t);\n"
             f"\t\t\tproductName = {name};\n\t\t\tproductReference = {ids[product_ref]} /* {product_name} */;\n"
             f"\t\t\tproductType = \"{product_type}\";\n\t\t}};\n")
 
@@ -214,6 +222,8 @@ def build():
     o.append("/* Begin PBXBuildFile section */\n")
     o.append(f"\t\t{ids['bf.embedExt']} /* {EXT}.appex in Embed Foundation Extensions */ = {{isa = PBXBuildFile; "
              f"fileRef = {ids['ref.ext']} /* {EXT}.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};\n")
+    o.append(f"\t\t{ids['bf.connectIQ']} /* ConnectIQ in Frameworks */ = {{isa = PBXBuildFile; "
+             f"productRef = {ids['prod.connectIQ']} /* ConnectIQ */; }};\n")
     o.append("/* End PBXBuildFile section */\n\n")
 
     o.append("/* Begin PBXContainerItemProxy section */\n")
@@ -253,7 +263,9 @@ def build():
     o.append("/* End PBXFileSystemSynchronizedRootGroup section */\n\n")
 
     o.append("/* Begin PBXFrameworksBuildPhase section */\n")
-    for k in ("app.frameworks", "ext.frameworks", "tests.frameworks"):
+    o.append(phase("app.frameworks", "PBXFrameworksBuildPhase", "Frameworks",
+                   f"\t\t\t\t{ids['bf.connectIQ']} /* ConnectIQ in Frameworks */,\n"))
+    for k in ("ext.frameworks", "tests.frameworks"):
         o.append(phase(k, "PBXFrameworksBuildPhase", "Frameworks"))
     o.append("/* End PBXFrameworksBuildPhase section */\n\n")
 
@@ -277,7 +289,8 @@ def build():
     o.append(target("t.app", APP, "ref.app", f"{APP}.app", "com.apple.product-type.application", "cfgList.app",
                     [("app.sources", "Sources"), ("app.frameworks", "Frameworks"), ("app.resources", "Resources"),
                      ("app.embed", "Embed Foundation Extensions")],
-                    [("grp.StridePlan", "StridePlan"), ("grp.Shared", "Shared")], deps=["dep.ext"]))
+                    [("grp.StridePlan", "StridePlan"), ("grp.Shared", "Shared")], deps=["dep.ext"],
+                    packages=[("prod.connectIQ", "ConnectIQ")]))
     o.append(target("t.ext", EXT, "ref.ext", f"{EXT}.appex", "com.apple.product-type.app-extension", "cfgList.ext",
                     [("ext.sources", "Sources"), ("ext.frameworks", "Frameworks"), ("ext.resources", "Resources")],
                     [("grp.LiveActivity", "LiveActivity"), ("grp.Shared", "Shared")]))
@@ -297,6 +310,8 @@ def build():
              f"\t\t\tbuildConfigurationList = {ids['cfgList.project']} /* Build configuration list for PBXProject \"StridePlan\" */;\n"
              f"\t\t\tdevelopmentRegion = en;\n\t\t\thasScannedForEncodings = 0;\n\t\t\tknownRegions = (\n\t\t\t\ten,\n\t\t\t\tBase,\n\t\t\t);\n"
              f"\t\t\tmainGroup = {ids['mainGroup']};\n\t\t\tminimizedProjectReferenceProxies = 1;\n"
+             f"\t\t\tpackageReferences = (\n"
+             f"\t\t\t\t{ids['pkg.connectIQ']} /* XCRemoteSwiftPackageReference \"connectiq-companion-app-sdk-ios\" */,\n\t\t\t);\n"
              f"\t\t\tpreferredProjectObjectVersion = 77;\n\t\t\tproductRefGroup = {ids['productsGroup']} /* Products */;\n"
              f"\t\t\tprojectDirPath = \"\";\n\t\t\tprojectRoot = \"\";\n\t\t\ttargets = (\n"
              f"\t\t\t\t{ids['t.app']} /* {APP} */,\n\t\t\t\t{ids['t.ext']} /* {EXT} */,\n\t\t\t\t{ids['t.tests']} /* {TESTS} */,\n"
@@ -335,7 +350,19 @@ def build():
     o.append(cfg_list("cfgList.app", f'PBXNativeTarget "{APP}"', "cfg.app.Debug", "cfg.app.Release"))
     o.append(cfg_list("cfgList.ext", f'PBXNativeTarget "{EXT}"', "cfg.ext.Debug", "cfg.ext.Release"))
     o.append(cfg_list("cfgList.tests", f'PBXNativeTarget "{TESTS}"', "cfg.tests.Debug", "cfg.tests.Release"))
-    o.append("/* End XCConfigurationList section */\n")
+    o.append("/* End XCConfigurationList section */\n\n")
+
+    o.append("/* Begin XCRemoteSwiftPackageReference section */\n")
+    o.append(f"\t\t{ids['pkg.connectIQ']} /* XCRemoteSwiftPackageReference \"connectiq-companion-app-sdk-ios\" */ = {{\n"
+             f"\t\t\tisa = XCRemoteSwiftPackageReference;\n\t\t\trepositoryURL = \"{CONNECTIQ_URL}\";\n"
+             f"\t\t\trequirement = {{\n\t\t\t\tkind = upToNextMajorVersion;\n\t\t\t\tminimumVersion = {CONNECTIQ_MIN_VERSION};\n\t\t\t}};\n\t\t}};\n")
+    o.append("/* End XCRemoteSwiftPackageReference section */\n\n")
+
+    o.append("/* Begin XCSwiftPackageProductDependency section */\n")
+    o.append(f"\t\t{ids['prod.connectIQ']} /* ConnectIQ */ = {{\n\t\t\tisa = XCSwiftPackageProductDependency;\n"
+             f"\t\t\tpackage = {ids['pkg.connectIQ']} /* XCRemoteSwiftPackageReference \"connectiq-companion-app-sdk-ios\" */;\n"
+             f"\t\t\tproductName = ConnectIQ;\n\t\t}};\n")
+    o.append("/* End XCSwiftPackageProductDependency section */\n")
 
     o.append(f"\t}};\n\trootObject = {ids['project']} /* Project object */;\n}}\n")
     return "".join(o)

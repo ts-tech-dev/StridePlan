@@ -54,7 +54,7 @@ struct RunSummaryView: View {
 
     private var optionsMenu: some View {
         Menu {
-            if profile.healthKitEnabled && run.healthKitUUID == nil {
+            if profile.healthKitEnabled && run.healthKitUUID == nil && !run.isFromGarmin {
                 Button {
                     RunRecorder.syncHealth(run: run, profile: profile, health: services.health, context: context)
                 } label: {
@@ -81,6 +81,11 @@ struct RunSummaryView: View {
                 Label("Saved to Apple Health", systemImage: "heart.fill")
                     .font(.caption)
                     .foregroundStyle(.pink)
+            }
+            if run.isFromGarmin {
+                Label("Recorded on your Garmin watch", systemImage: "applewatch.side.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }

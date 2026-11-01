@@ -80,6 +80,14 @@ struct MainTabView: View {
                 await PlanManager.refreshReminders(plan: plan, template: plan.flatMap { services.plans.plan(id: $0.planID) },
                                                    profile: profile, notifications: services.notifications)
             }
+            if services.garmin.status.isReady {
+                Task { try? await GarminSync.sendUpcoming(profile: profile, services: services, context: context) }
+            }
+        }
+        .onAppear {
+            services.garmin.onEvent = { [services, context, profile] event in
+                GarminSync.handle(event, profile: profile, services: services, context: context)
+            }
         }
     }
 }
